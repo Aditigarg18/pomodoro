@@ -41,7 +41,7 @@ pomodoro_project/
 1. **Clone this repository**:
 git clone 
 
-https://github.com/yourusername/disease-prediction-app.git
+https://github.com/yourusername/pomodoro.git
 
 2. **Install Python 3.x on your machine**:
 
