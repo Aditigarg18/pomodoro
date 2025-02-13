@@ -1,26 +1,26 @@
-⏳ Pomodoro Productivity Tool
+## ⏳ Pomodoro Productivity Tool
 
 A simple yet effective productivity tool that helps you stay focused using the Pomodoro Technique! Work in 25-minute intervals with 5-minute breaks and take a longer break after four cycles. This tool is designed to boost productivity, reduce burnout, and enhance focus by breaking tasks into structured, manageable sessions.
 
-🚀 Features
+## 🚀 Features
 
-- ✅ Time Management - Splits work into 25-minute intervals with 5-minute breaks, reducing procrastination and improving focus.
+-  ✅ **Time Management**  Splits work into 25-minute intervals with 5-minute breaks, reducing procrastination and improving focus.
 
-- ✅ Progress Tracking - Visual checkmarks to track completed Pomodoros, offering motivation and a sense of accomplishment.
+-  ✅**Progress Tracking** Visual checkmarks to track completed Pomodoros, offering motivation and a sense of accomplishment.
 
-- ✅ Customizable Intervals - Adjust work and break durations to fit personal preferences and different task types.
+- ✅ **Customizable Intervals**  Adjust work and break durations to fit personal preferences and different task types.
 
-- ✅ User Notifications - Get audio/visual alerts when work sessions end and when it's time to take a break.
+- ✅ **User Notifications**  Get audio/visual alerts when work sessions end and when it's time to take a break.
 
-🛠️ Tech Stack
+## 🛠️ Tech Stack
 
-- Python 🐍
+- # Python 🐍
 
-- Tkinter (GUI) 🎨
+- # Tkinter (GUI) 🎨
 
-- Audio/Visual Alerts 🔔
+- # Audio/Visual Alerts 🔔
 
-📂 Project Structure
+## 📂 Project Structure
 
  pomodoro_project/
  │── main.py            # Main application script
@@ -30,39 +30,34 @@ A simple yet effective productivity tool that helps you stay focused using the P
  │   ├── settings.py   # Customizable settings
  │   └── README.md     # Documentation
 
-📥 Installation
+## 📥 Installation
 
-1️⃣ Clone this repository
+# 1️⃣ Clone this repository
 
-git clone https://github.com/yourusername/pomodoro.git
+- git clone https://github.com/yourusername/pomodoro.git
 
-2️⃣ Install Python 3.x
-👉 Download from Python Official Website
-https://www.python.org/downloads/
+# 2️⃣ Install Python 3.x
 
-3️⃣ Navigate to the project folder
+- 👉 Download from Python Official Website
+- https://www.python.org/downloads/
 
-cd pomodoro_project
+# 3️⃣ Navigate to the project folder
 
-▶️ Running the Application
+  - cd pomodoro_project
 
-Run the Pomodoro Timer with:
+# ▶️ Running the Application
 
-python main.py
+- Run the Pomodoro Timer with:
 
-⏳ Stay focused, work smarter, and improve productivity! 🎯🚀
+- python main.py
 
-🛠 Running Tests
+# ⏳ Stay focused, work smarter, and improve productivity! 🎯🚀
 
-To run tests, execute:
+## 💡 Why Use Pomodoro?
 
-python -m unittest discover
+# - ✅ Increases focus 🎯
+# - ✅ Reduces burnout 🔥
+# - ✅ Encourages work-life balance ⚖️
+# - ✅ Enhances efficiency ⚡
 
-💡 Why Use Pomodoro?
-
-- ✅ Increases focus 🎯
-- ✅ Reduces burnout 🔥
-- ✅ Encourages work-life balance ⚖️
-- ✅ Enhances efficiency ⚡
-
-📢 Start your Pomodoro journey today! ⏳✨
+# 📢 Start your Pomodoro journey today! ⏳✨
