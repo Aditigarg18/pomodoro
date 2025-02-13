@@ -14,11 +14,11 @@ A simple yet effective productivity tool that helps you stay focused using the P
 
 ## 🛠️ Tech Stack
 
-- ## Python 🐍
+- **Python 🐍**
 
-- ## Tkinter (GUI) 🎨
+- **Tkinter (GUI) 🎨**
 
-- ## Audio/Visual Alerts 🔔
+- **Audio/Visual Alerts 🔔**
 
 ## 📂 Project Structure
 
