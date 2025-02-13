@@ -32,32 +32,32 @@ A simple yet effective productivity tool that helps you stay focused using the P
 
 ## 📥 Installation
 
-## 1️⃣ Clone this repository
+**1️⃣ Clone this repository**
 
 - git clone https://github.com/yourusername/pomodoro.git
 
-## 2️⃣ Install Python 3.x
+**2️⃣ Install Python 3.x**
 
 - 👉 Download from Python Official Website
 - https://www.python.org/downloads/
 
-## 3️⃣ Navigate to the project folder
+ **3️⃣ Navigate to the project folder**
 
   - cd pomodoro_project
 
-## ▶️ Running the Application
+**▶️ Running the Application**
 
 - Run the Pomodoro Timer with:
 
 - python main.py
 
-# ⏳ Stay focused, work smarter, and improve productivity! 🎯🚀
+## ⏳ Stay focused, work smarter, and improve productivity! 🎯🚀
 
 ## 💡 Why Use Pomodoro?
 
-## - ✅ Increases focus 🎯
-## - ✅ Reduces burnout 🔥
-## - ✅ Encourages work-life balance ⚖️
-## - ✅ Enhances efficiency ⚡
+ - ✅ **Increases focus 🎯**
+ - ✅ **Reduces burnout 🔥**
+ - ✅ **Encourages work-life balance ⚖️**
+ - ✅ **Enhances efficiency ⚡**
 
-# 📢 Start your Pomodoro journey today! ⏳✨
+## 📢 Start your Pomodoro journey today! ⏳✨
