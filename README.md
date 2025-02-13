@@ -23,12 +23,12 @@ A simple yet effective productivity tool that helps you stay focused using the P
 ## 📂 Project Structure
 
  pomodoro_project/
- │── main.py            # Main application script
- ├── assets/           # Image and sound assets
- │   └── tomato.png    # Pomodoro icon
- ├── config/           # Configuration settings
- │   ├── settings.py   # Customizable settings
- │   └── README.md     # Documentation
+ │── main.py            
+ ├── assets/          
+ │   └── tomato.png   
+ ├── config/          
+ │   ├── settings.py  
+ │   └── README.md     
 
 ## 📥 Installation
 
