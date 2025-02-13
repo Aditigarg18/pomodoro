@@ -1,4 +1,4 @@
-## ⏳ Pomodoro Productivity Tool
+# ⏳ Pomodoro Productivity Tool
 
 A simple yet effective productivity tool that helps you stay focused using the Pomodoro Technique! Work in 25-minute intervals with 5-minute breaks and take a longer break after four cycles. This tool is designed to boost productivity, reduce burnout, and enhance focus by breaking tasks into structured, manageable sessions.
 
@@ -14,11 +14,11 @@ A simple yet effective productivity tool that helps you stay focused using the P
 
 ## 🛠️ Tech Stack
 
-- # Python 🐍
+- ## Python 🐍
 
-- # Tkinter (GUI) 🎨
+- ## Tkinter (GUI) 🎨
 
-- # Audio/Visual Alerts 🔔
+- ## Audio/Visual Alerts 🔔
 
 ## 📂 Project Structure
 
@@ -32,20 +32,20 @@ A simple yet effective productivity tool that helps you stay focused using the P
 
 ## 📥 Installation
 
-# 1️⃣ Clone this repository
+## 1️⃣ Clone this repository
 
 - git clone https://github.com/yourusername/pomodoro.git
 
-# 2️⃣ Install Python 3.x
+## 2️⃣ Install Python 3.x
 
 - 👉 Download from Python Official Website
 - https://www.python.org/downloads/
 
-# 3️⃣ Navigate to the project folder
+## 3️⃣ Navigate to the project folder
 
   - cd pomodoro_project
 
-# ▶️ Running the Application
+## ▶️ Running the Application
 
 - Run the Pomodoro Timer with:
 
@@ -55,9 +55,9 @@ A simple yet effective productivity tool that helps you stay focused using the P
 
 ## 💡 Why Use Pomodoro?
 
-# - ✅ Increases focus 🎯
-# - ✅ Reduces burnout 🔥
-# - ✅ Encourages work-life balance ⚖️
-# - ✅ Enhances efficiency ⚡
+## - ✅ Increases focus 🎯
+## - ✅ Reduces burnout 🔥
+## - ✅ Encourages work-life balance ⚖️
+## - ✅ Enhances efficiency ⚡
 
 # 📢 Start your Pomodoro journey today! ⏳✨
