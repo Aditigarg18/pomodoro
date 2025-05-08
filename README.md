@@ -35,21 +35,25 @@ A simple yet effective productivity tool that helps you stay focused using the P
 **1️⃣ Clone this repository**
 ```bash
 git clone https://github.com/yourusername/pomodoro.git
+```
 
 **2️⃣ Install Python 3.x**
-
+```bash
 - 👉 Download from Python Official Website
 - https://www.python.org/downloads/
+```
 
  **3️⃣ Navigate to the project folder**
-
+```bash
   - cd pomodoro_project
+```
 
 **▶️ Running the Application**
 
 - Run the Pomodoro Timer with:
-
+```bash
 - python main.py
+```
 
 ## ⏳ Stay focused, work smarter, and improve productivity! 🎯🚀
 
