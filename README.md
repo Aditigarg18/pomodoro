@@ -30,7 +30,7 @@ A simple yet effective productivity tool that helps you stay focused using the P
  │   ├── settings.py  
  │   └── README.md     
 
- [🔗 ⚙️ Installation](#⚙️Installation)
+ ## ⚙️ Installation
 
 **1️⃣ Clone this repository**
 ```bash
