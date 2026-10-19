@@ -1,6 +1,8 @@
 # ⏳ Pomodoro Productivity Tool
 
 A simple yet effective productivity tool that helps you stay focused using the Pomodoro Technique! Work in 25-minute intervals with 5-minute breaks and take a longer break after four cycles. This tool is designed to boost productivity, reduce burnout, and enhance focus by breaking tasks into structured, manageable sessions.
+Developed a productivity application featuring a Pomodoro timer, task prioritization, progress tracking, and achievement badges.
+Integrated AI-powered task planning and personalized study recommendations to help users organize learning goals and improve focus.
 
 ## 🚀 Features
 
@@ -22,38 +24,47 @@ A simple yet effective productivity tool that helps you stay focused using the P
 
 ## 📂 Project Structure
 
- pomodoro_project/
- │── main.py            
- ├── assets/          
- │   └── tomato.png   
- ├── config/          
- │   ├── settings.py  
- │   └── README.md     
+## 📂 Project Structure
 
- ## ⚙️ Installation
+```text
+pomodoro/
+├── main.py
+├── skill learning.py
+├── tomato.png
+├── tasks.json
+├── README.md
+└── .gitignore
+```   
+## 🚀 Getting Started
 
-**1️⃣ Clone this repository**
+### Prerequisites
+
+- Python 3.10 or compatible version
+- Git (optional)
+
+### 1. Clone the Repository
+
 ```bash
-git clone https://github.com/yourusername/pomodoro.git
+git clone https://github.com/Aditigarg18/pomodoro.git
+cd pomodoro
 ```
 
-**2️⃣ Install Python 3.x**
+### 2. Install Dependencies
+
+If your application uses Windows notifications, install:
+
 ```bash
-- 👉 Download from Python Official Website
-- https://www.python.org/downloads/
+python -m pip install winotify
 ```
 
- **3️⃣ Navigate to the project folder**
+### 3. Run the Application
+
 ```bash
-  - cd pomodoro_project
+python main.py
 ```
 
-**▶️ Running the Application**
+Ensure that `tomato.png` and `skill learning.py` are in the correct locations.
 
-- Run the Pomodoro Timer with:
-```bash
-- python main.py
-```
 
 ## ⏳ Stay focused, work smarter, and improve productivity! 🎯🚀
 
