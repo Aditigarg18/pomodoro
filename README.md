@@ -65,6 +65,22 @@ python main.py
 
 Ensure that `tomato.png` and `skill learning.py` are in the correct locations.
 
+## 🔐 API Configuration
+
+This project can use the following APIs for AI-powered productivity and learning features:
+
+- **Google Gemini API** – For AI-powered task planning and productivity suggestions.
+- **YouTube Data API v3** – For searching relevant learning videos.
+
+### Setup
+
+1. Create a `.env` file in the project root directory.
+2. Add your API keys:
+
+   ```env
+   GEMINI_API_KEY=your_gemini_api_key
+   YOUTUBE_API_KEY=your_youtube_api_key
+   ```
 
 ## ⏳ Stay focused, work smarter, and improve productivity! 🎯🚀
 
