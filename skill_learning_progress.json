@@ -1,0 +1,44 @@
+{
+    "5": true,
+    "4": true,
+    "Cooking": {
+        "Cooking for Beginners": true,
+        "Learn Cooking Step by Step": false,
+        "Cooking Core Concepts": false,
+        "Practical Cooking": false,
+        "Cooking Tips and Techniques": false,
+        "Practice Cooking": false
+    },
+    "dancing": {
+        "dancing for complete beginners": false,
+        "How to learn dancing step by step": false,
+        "dancing basic concepts and techniques": false,
+        "dancing practical tutorial": false,
+        "dancing tips and tricks for beginners": false,
+        "dancing beginner practice or project": false
+    },
+    "java": {
+        "java for complete beginners": false,
+        "How to learn java step by step": false,
+        "java basic concepts and techniques": false,
+        "java practical tutorial": false,
+        "java tips and tricks for beginners": false,
+        "java beginner practice or project": false
+    },
+    "powerbi": {
+        "powerbi for complete beginners": false,
+        "How to learn powerbi step by step": false,
+        "powerbi basic concepts and techniques": false,
+        "powerbi practical tutorial": false,
+        "powerbi tips and tricks for beginners": false,
+        "powerbi beginner practice or project": false
+    },
+    "kafka": {
+        "kafka for Beginners": false,
+        "Learn kafka Step by Step": false,
+        "kafka Core Concepts": false,
+        "Practical kafka": false,
+        "kafka Tips and Techniques": false,
+        "Practice kafka": false
+    }
+}

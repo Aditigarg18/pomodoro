@@ -1,2033 +1,1385 @@
-from tkinter import *
-import math
+
 import json
+import math
+import subprocess
+import sys
+import tkinter as tk
+from tkinter import ttk, messagebox
 from pathlib import Path
-from datetime import date, datetime
-from urllib import response
-from winotify import Notification
-import os
-from dotenv import load_dotenv
-from google import genai
-import webbrowser
-from urllib.parse import quote
-from google.genai import types
-# ---------------------------- CONSTANTS ------------------------------- #
+from datetime import date
+from tkinter import PhotoImage
+# Windows notifications are optional.
+try:
+    from winotify import Notification
+except ImportError:
+    Notification = None
 
-PINK = "#e2979c"
-RED = "#e7305b"
-GREEN = "#9bdeac"
-YELLOW = "#f7f5dd"
-ORANGE = "#FFA500"
-FONT_NAME = "Courier"
 
-WORK_MIN = 1
+# =========================================================
+# SETTINGS
+# =========================================================
+
+APP_NAME = "Focus Mode"
+BG = "#F4F6FB"
+CARD = "#FFFFFF"
+TEXT = "#20243A"
+MUTED = "#73798C"
+PRIMARY = "#635BFF"
+PRIMARY_DARK = "#5148E5"
+GREEN = "#22A06B"
+RED = "#E05260"
+ORANGE = "#F59E0B"
+BORDER = "#E5E7EB"
+FONT_NAME = "Segoe UI"
+
+WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
+LONG_BREAK_EVERY = 4
 
-today = date.today().isoformat()
+TODAY = date.today().isoformat()
+TASK_FILE = Path(__file__).resolve().parent / "tasks.json"
+SKILL_FILE = Path(__file__).resolve().parent / "skill_learning.py"
 
-reps = 0
-timer = None
+PRIORITIES = {
+    "High": ("🔥", RED),
+    "Medium": ("🟡", ORANGE),
+    "Low": ("🟢", GREEN),
+}
 
-task_count = 0
-completed_tasks = 0
+BADGE_INFO = {
+    "first_task": ("🌱", "First Step", "Complete your first task"),
+    "task_crusher": ("🔥", "Task Crusher", "Complete 5 tasks"),
+    "productivity_pro": ("⚡", "Productivity Pro", "Complete 10 tasks"),
+    "focus_starter": ("🍅", "Focus Starter", "Finish 1 focus session"),
+    "deep_focus": ("🧠", "Deep Focus", "Finish 5 focus sessions"),
+    "focus_master": ("🚀", "Focus Master", "Finish 10 focus sessions"),
+    "perfect_day": ("💯", "Perfect Day", "Complete every task"),
+}
+
+
+# =========================================================
+# APP STATE
+# =========================================================
+
+tasks = []
 completed_sessions = 0
 focus_minutes = 0
 
-TASK_FILE = Path(__file__).resolve().parent / "tasks.json"
+timer_mode = "Focus"
+seconds_left = WORK_MIN * 60
+timer_running = False
+timer_after_id = None
+completed_focus_sessions = 0
 
-badges = {
-    "first_task": False,
-    "task_crusher": False,
-    "productivity_pro": False,
-    "focus_starter": False,
-    "deep_focus": False,
-    "focus_master": False,
-    "perfect_day": False
-}
-load_dotenv()
+badges = {key: False for key in BADGE_INFO}
 
-gemini_client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
+
+# =========================================================
+# ROOT WINDOW AND THEME
+# =========================================================
+
+root = tk.Tk()
+root.title("Focus Mode | Productivity Dashboard")
+root.geometry("1120x850")
+root.minsize(900, 680)
+root.configure(bg=BG)
+
+style = ttk.Style(root)
+
+try:
+    style.theme_use("clam")
+except tk.TclError:
+    pass
+
+style.configure(
+    "TProgressbar",
+    troughcolor="#E9EAF4",
+    background=PRIMARY,
+    bordercolor="#E9EAF4",
+    lightcolor=PRIMARY,
+    darkcolor=PRIMARY,
+    thickness=10,
 )
-# ---------------------------- TASK PROGRESS ------------------------------- #
 
-def update_task_progress():
+style.configure(
+    "TCombobox",
+    padding=7,
+    fieldbackground=CARD,
+    background=CARD,
+)
 
-    task_progress.config(
-        text=f"Tasks Completed: {completed_tasks}/{task_count}"
-    )
-
-    update_dashboard()
-
-
-# ---------------------------- SESSION / FOCUS ------------------------------- #
-
-def update_session_count():
-
-    session_label.config(
-        text=f"🍅 Sessions: {completed_sessions}"
-    )
-
-    update_dashboard()
+style.configure(
+    "Vertical.TScrollbar",
+    background="#D8D9E6",
+    troughcolor=BG,
+    bordercolor=BG,
+)
 
 
-def update_focus_time():
+# =========================================================
+# UI HELPERS
+# =========================================================
 
-    focus_time_label.config(
-        text=f"⏱ Focus Time: {focus_minutes} min"
-    )
-
-    update_dashboard()
-
-
-# ---------------------------- DASHBOARD ------------------------------- #
-
-def update_dashboard():
-
-    if task_count > 0:
-        progress = int((completed_tasks / task_count) * 100)
-    else:
-        progress = 0
-
-    dashboard_sessions.config(
-        text=f"🍅 Sessions Completed: {completed_sessions}"
-    )
-
-    dashboard_focus.config(
-        text=f"⏱ Focus Time: {focus_minutes} min"
-    )
-
-    dashboard_tasks.config(
-        text=f"✅ Tasks Completed: {completed_tasks}/{task_count}"
-    )
-
-    dashboard_progress.config(
-        text=f"📊 Today's Progress: {progress}%"
-    )
-
-    update_progress_bar()
-
-
-# ---------------------------- PROGRESS BAR ------------------------------- #
-
-def update_progress_bar():
-
-    if task_count > 0:
-        progress = completed_tasks / task_count
-    else:
-        progress = 0
-
-    progress_bar.delete("all")
-
-    # Background
-    progress_bar.create_rectangle(
-        0,
-        0,
-        300,
-        25,
-        fill="#dddddd",
-        outline=""
-    )
-
-    # Progress
-    progress_bar.create_rectangle(
-        0,
-        0,
-        300 * progress,
-        25,
-        fill=GREEN,
-        outline=""
-    )
-
-    progress_bar.create_text(
-        150,
-        12,
-        text=f"{int(progress * 100)}%",
-        fill="#333333",
-        font=(FONT_NAME, 10, "bold")
+def create_card(parent):
+    return tk.Frame(
+        parent,
+        bg=CARD,
+        highlightbackground=BORDER,
+        highlightthickness=1,
+        bd=0,
     )
 
 
-# ---------------------------- SAVE TASKS ------------------------------- #
+def create_button(
+    parent,
+    text,
+    command,
+    bg=PRIMARY,
+    fg="white",
+    padx=14,
+    pady=9,
+):
+    return tk.Button(
+        parent,
+        text=text,
+        command=command,
+        bg=bg,
+        fg=fg,
+        activebackground=PRIMARY_DARK if bg == PRIMARY else bg,
+        activeforeground=fg,
+        relief="flat",
+        bd=0,
+        cursor="hand2",
+        font=(FONT_NAME, 10, "bold"),
+        padx=padx,
+        pady=pady,
+    )
 
-def save_tasks():
 
-    tasks = []
+def notify(title, message):
+    if Notification is None:
+        return
 
-    for widget in main_frame.winfo_children():
+    try:
+        Notification(
+            app_id=APP_NAME,
+            title=title,
+            msg=message,
+        ).show()
+    except Exception:
+        pass
 
-        if isinstance(widget, Label):
 
-            text = widget.cget("text")
+# =========================================================
+# DATA STORAGE
+# =========================================================
 
-            if "☐" in text or "✅" in text:
-                tasks.append(text)
+def save_data():
+    """Save today's tasks, focus time, sessions and badges."""
 
-    # Read existing history
-    if TASK_FILE.exists():
-
-        with open(TASK_FILE, "r", encoding="utf-8") as file:
-            data = json.load(file)
-
-    else:
+    try:
         data = {}
 
-    # Save today's complete information
-    data[today] = {
-        "tasks": tasks,
-        "sessions": completed_sessions,
-        "focus_minutes": focus_minutes
-    }
+        if TASK_FILE.exists():
+            try:
+                with open(TASK_FILE, "r", encoding="utf-8") as file:
+                    loaded = json.load(file)
 
-    with open(TASK_FILE, "w", encoding="utf-8") as file:
+                if isinstance(loaded, dict):
+                    data = loaded
 
-        json.dump(
-            data,
-            file,
-            ensure_ascii=False,
-            indent=4
-        )
+            except (OSError, json.JSONDecodeError):
+                data = {}
+
+        data[TODAY] = {
+            "tasks": [
+                {
+                    "text": task["text"],
+                    "priority": task["priority"],
+                    "done": task["done"],
+                }
+                for task in tasks
+            ],
+            "sessions": completed_sessions,
+            "focus_minutes": focus_minutes,
+            "badges": badges,
+        }
+
+        with open(TASK_FILE, "w", encoding="utf-8") as file:
+            json.dump(data, file, indent=4, ensure_ascii=False)
+
+    except OSError as error:
+        print("Could not save data:", error)
 
 
-# ---------------------------- LOAD TASKS ------------------------------- #
+def load_data():
+    """Load today's data, including the older task-list format."""
 
-def load_tasks():
-
-    global task_count
-    global completed_tasks
+    global tasks
     global completed_sessions
     global focus_minutes
+    global badges
 
     if not TASK_FILE.exists():
         return
 
-    with open(TASK_FILE, "r", encoding="utf-8") as file:
-        data = json.load(file)
+    try:
+        with open(TASK_FILE, "r", encoding="utf-8") as file:
+            data = json.load(file)
 
-    today_data = data.get(today, {})
+        day_data = data.get(TODAY, {})
 
-    # ------------------------------------------------
-    # Handle OLD format:
-    # "2026-08-23": ["☐ Task 1", "✅ Task 2"]
-    # ------------------------------------------------
-
-    if isinstance(today_data, list):
-
-        tasks = today_data
-
-        saved_sessions = 0
-        saved_focus = 0
-
-    # ------------------------------------------------
-    # Handle NEW format:
-    # "2026-08-23": {
-    #     "tasks": [...],
-    #     "sessions": 2,
-    #     "focus_minutes": 2
-    # }
-    # ------------------------------------------------
-
-    elif isinstance(today_data, dict):
-
-        tasks = today_data.get("tasks", [])
-
-        saved_sessions = today_data.get(
-            "sessions",
-            0
-        )
-
-        saved_focus = today_data.get(
-            "focus_minutes",
-            0
-        )
-
-    else:
-
-        tasks = []
-        saved_sessions = 0
-        saved_focus = 0
-
-    # Restore today's productivity data
-    completed_sessions = saved_sessions
-    focus_minutes = saved_focus
-
-    # ------------------------------------------------
-    # Restore tasks
-    # ------------------------------------------------
-
-    for text in tasks:
-
-        # Make sure task is actually a string
-        if not isinstance(text, str):
-            continue
-
-        task_count += 1
-
-        if "✅" in text:
-            completed_tasks += 1
-
-        current_row = 9 + task_count
-
-        # ---------------- PRIORITY ---------------- #
-
-        if "🔥" in text:
-
-            priority_color = RED
-
-        elif "🟡" in text:
-
-            priority_color = ORANGE
-
-        else:
-
-            priority_color = GREEN
-
-        priority_label = Label(
-            main_frame,
-            text="●",
-            fg=priority_color,
-            bg=YELLOW,
-            font=(FONT_NAME, 15, "bold")
-        )
-
-        priority_label.grid(
-            column=0,
-            row=current_row,
-            padx=(0, 5),
-            pady=3,
-            sticky="e"
-        )
-
-        # ---------------- TASK ---------------- #
-
-        if "✅" in text:
-
-            task_fg = "#888888"
-            task_font = (
-                FONT_NAME,
-                12,
-                "overstrike"
-            )
-
-        else:
-
-            task_fg = "#333333"
-            task_font = (
-                FONT_NAME,
-                12
-            )
-
-        task_label = Label(
-            main_frame,
-            text=text,
-            fg=task_fg,
-            bg=YELLOW,
-            font=task_font,
-            cursor="hand2"
-        )
-
-        task_label.grid(
-            column=1,
-            row=current_row,
-            pady=3,
-            sticky="w"
-        )
-
-        task_label.bind(
-            "<Button-1>",
-            lambda event, label=task_label:
-            complete_task(label)
-        )
-
-        # ---------------- DELETE BUTTON ---------------- #
-
-        delete_button = Button(
-            main_frame,
-            text="🗑",
-            font=(FONT_NAME, 9),
-            highlightthickness=0
-        )
-
-        delete_button.config(
-            command=lambda
-            label=task_label,
-            priority=priority_label,
-            button=delete_button:
-            delete_task(
-                label,
-                priority,
-                button
-            )
-        )
-
-        delete_button.grid(
-            column=2,
-            row=current_row,
-            padx=5
-        )
-
-        # ---------------- EDIT BUTTON ---------------- #
-
-        edit_button = Button(
-            main_frame,
-            text="✏️",
-            font=(FONT_NAME, 9),
-            highlightthickness=0
-        )
-
-        edit_button.config(
-            command=lambda
-            label=task_label,
-            priority=priority_label:
-            edit_task(
-                label,
-                priority
-            )
-        )
-
-        edit_button.grid(
-            column=3,
-            row=current_row,
-            padx=3
-        )
-
-    update_task_progress()
-    update_session_count()
-    update_focus_time()
-
-# ---------------------------- BADGES ------------------------------- #
-
-def check_badges():
-
-    new_badge = None
-
-    # 🌱 First Step
-    if completed_tasks >= 1 and not badges["first_task"]:
-
-        badges["first_task"] = True
-
-        new_badge = (
-            "🌱 FIRST STEP",
-            "You completed your first task! 🚀"
-        )
-
-    # 🔥 Task Crusher
-    elif completed_tasks >= 5 and not badges["task_crusher"]:
-
-        badges["task_crusher"] = True
-
-        new_badge = (
-            "🔥 TASK CRUSHER",
-            "You completed 5 tasks! You're on fire! 🔥"
-        )
-
-    # ⚡ Productivity Pro
-    elif completed_tasks >= 10 and not badges["productivity_pro"]:
-
-        badges["productivity_pro"] = True
-
-        new_badge = (
-            "⚡ PRODUCTIVITY PRO",
-            "10 tasks completed! Amazing productivity! 💪"
-        )
-
-    # 🍅 Focus Starter
-    elif completed_sessions >= 1 and not badges["focus_starter"]:
-
-        badges["focus_starter"] = True
-
-        new_badge = (
-            "🍅 FOCUS STARTER",
-            "You completed your first focus session!"
-        )
-
-    # 🧠 Deep Focus
-    elif completed_sessions >= 5 and not badges["deep_focus"]:
-
-        badges["deep_focus"] = True
-
-        new_badge = (
-            "🧠 DEEP FOCUS",
-            "5 focus sessions completed! 🧠🔥"
-        )
-
-    # 🚀 Focus Master
-    elif completed_sessions >= 10 and not badges["focus_master"]:
-
-        badges["focus_master"] = True
-
-        new_badge = (
-            "🚀 FOCUS MASTER",
-            "10 focus sessions completed! You're unstoppable!"
-        )
-
-    # 💯 Perfect Day
-    elif (
-        task_count > 0
-        and completed_tasks == task_count
-        and not badges["perfect_day"]
-    ):
-
-        badges["perfect_day"] = True
-
-        new_badge = (
-            "💯 PERFECT DAY",
-            "All today's tasks are complete! 🎉"
-        )
-
-    # Show notification
-    if new_badge:
-
-        title, message = new_badge
-
-        send_notification(
-            f"🏆 Badge Unlocked: {title}",
-            message
-        )
-
-    update_badges_ui()
-# ---------------------------- COMPLETE TASK ------------------------------- #
-
-def complete_task(label):
-
-    global completed_tasks
-
-    current_text = label.cget("text")
-
-    if "☐" in current_text:
-
-        label.config(
-            text=current_text.replace("☐", "✅", 1),
-            fg="#888888",
-            font=(FONT_NAME, 12, "overstrike")
-        )
-
-        completed_tasks += 1
-
-        # Check if a new badge was earned
-        check_badges()
-
-    else:
-
-        label.config(
-            text=current_text.replace("✅", "☐", 1),
-            fg="#333333",
-            font=(FONT_NAME, 12)
-        )
-
-        completed_tasks -= 1
-
-    update_task_progress()
-    save_tasks()
-   
-
-# ---------------------------- DELETE TASK ------------------------------- #
-
-def delete_task(task_label, priority_label, delete_button):
-
-    global task_count
-    global completed_tasks
-
-    current_text = task_label.cget("text")
-
-    # If task was completed, decrease completed count
-    if "✅" in current_text:
-        completed_tasks -= 1
-
-    # Remove widgets
-    task_label.destroy()
-    priority_label.destroy()
-    delete_button.destroy()
-
-    task_count -= 1
-
-    update_task_progress()
-    save_tasks()
-
-
-# ---------------------------- EDIT TASK ------------------------------- #
-
-def edit_task(task_label, priority_label):
-
-    current_text = task_label.cget("text")
-
-    # Remove priority icon and checkbox
-    task_text = current_text
-
-    for icon in ["🔥", "🟡", "🟢", "☐", "✅"]:
-        task_text = task_text.replace(icon, "")
-
-    task_text = task_text.strip()
-
-    # Edit window
-    edit_window = Toplevel(window)
-
-    edit_window.title("Edit Task")
-    edit_window.geometry("350x220")
-    edit_window.config(bg=YELLOW)
-
-    Label(
-        edit_window,
-        text="✏️ Edit Task",
-        bg=YELLOW,
-        fg=RED,
-        font=(FONT_NAME, 18, "bold")
-    ).pack(pady=15)
-
-    edit_entry = Entry(
-        edit_window,
-        width=30,
-        font=(FONT_NAME, 11)
-    )
-
-    edit_entry.insert(0, task_text)
-    edit_entry.pack(pady=10)
-
-    # Priority
-    edit_priority = StringVar()
-
-    if "🔥" in current_text:
-        edit_priority.set("High")
-
-    elif "🟡" in current_text:
-        edit_priority.set("Medium")
-
-    else:
-        edit_priority.set("Low")
-
-    priority_menu = OptionMenu(
-        edit_window,
-        edit_priority,
-        "High",
-        "Medium",
-        "Low"
-    )
-
-    priority_menu.pack(pady=5)
-
-    def save_edit():
-
-        new_task = edit_entry.get().strip()
-        new_priority = edit_priority.get()
-
-        if not new_task:
-            return
-
-        if new_priority == "High":
-
-            icon = "🔥"
-            color = RED
-
-        elif new_priority == "Medium":
-
-            icon = "🟡"
-            color = ORANGE
-
-        else:
-
-            icon = "🟢"
-            color = GREEN
-
-        # Preserve completed state
-        if "✅" in current_text:
-            checkbox = "✅"
-
-        else:
-            checkbox = "☐"
-
-        task_label.config(
-            text=f"{icon} {checkbox} {new_task}"
-        )
-
-        # Update priority dot
-        priority_label.config(
-            fg=color
-        )
-
-        # Update completed styling
-        if checkbox == "✅":
-
-            task_label.config(
-                fg="#888888",
-                font=(FONT_NAME, 12, "overstrike")
-            )
-
-        else:
-
-            task_label.config(
-                fg="#333333",
-                font=(FONT_NAME, 12)
-            )
-
-        save_tasks()
-
-        edit_window.destroy()
-
-    Button(
-        edit_window,
-        text="Save",
-        font=(FONT_NAME, 11, "bold"),
-        highlightthickness=0,
-        command=save_edit
-    ).pack(pady=10)
-
-
-# ---------------------------- SMART FOCUS ------------------------------- #
-
-def get_priority(text):
-
-    if "🔥" in text:
-        return 3
-
-    elif "🟡" in text:
-        return 2
-
-    elif "🟢" in text:
-        return 1
-
-    else:
-        return 0
-
-
-def smart_focus():
-
-    pending_tasks = []
-
-    for widget in main_frame.winfo_children():
-
-        if isinstance(widget, Label):
-
-            text = widget.cget("text")
-
-            if "☐" in text:
-                pending_tasks.append(text)
-
-    if not pending_tasks:
-
-        smart_focus_label.config(
-            text="🤖 No pending tasks!\nYou're all caught up 🎉",
-            fg=GREEN
-        )
-
+    except (OSError, json.JSONDecodeError):
         return
 
-    # Highest priority task first
-    recommended_task = max(
-        pending_tasks,
-        key=get_priority
-    )
+    if isinstance(day_data, list):
+        # Compatibility with the original tasks.json format.
+        saved_tasks = day_data
 
-    # Remove icons so only task name is displayed
-    task_name = recommended_task
+    elif isinstance(day_data, dict):
+        saved_tasks = day_data.get("tasks", [])
 
-    task_name = task_name.replace("🔥", "")
-    task_name = task_name.replace("🟡", "")
-    task_name = task_name.replace("🟢", "")
-    task_name = task_name.replace("☐", "")
+        completed_sessions = int(
+            day_data.get("sessions", 0) or 0
+        )
 
-    task_name = task_name.strip()
+        focus_minutes = int(
+            day_data.get("focus_minutes", 0) or 0
+        )
 
-    if "🔥" in recommended_task:
+        saved_badges = day_data.get("badges", {})
 
-        priority_text = "HIGH PRIORITY 🔥"
-
-    elif "🟡" in recommended_task:
-
-        priority_text = "MEDIUM PRIORITY 🟡"
+        if isinstance(saved_badges, dict):
+            for key in badges:
+                badges[key] = bool(saved_badges.get(key, False))
 
     else:
+        saved_tasks = []
 
-        priority_text = "LOW PRIORITY 🟢"
+    tasks = []
 
-    smart_focus_label.config(
-        text=f"🤖 Recommended Focus\n\n"
-             f"{task_name}\n\n"
-             f"{priority_text}",
-        fg="#333333"
-    )
+    for item in saved_tasks:
+        if isinstance(item, dict):
+            task_text = str(item.get("text", "")).strip()
+
+            if not task_text:
+                continue
+
+            priority = item.get("priority", "Medium")
+
+            if priority not in PRIORITIES:
+                priority = "Medium"
+
+            tasks.append({
+                "text": task_text,
+                "priority": priority,
+                "done": bool(item.get("done", False)),
+            })
+
+        elif isinstance(item, str):
+            # Read task entries saved by the older version.
+            done = "✅" in item
+
+            if "🔥" in item:
+                priority = "High"
+            elif "🟡" in item:
+                priority = "Medium"
+            else:
+                priority = "Low"
+
+            task_text = item
+
+            for symbol in ("🔥", "🟡", "🟢", "☐", "✅"):
+                task_text = task_text.replace(symbol, "")
+
+            task_text = task_text.strip()
+
+            if task_text:
+                tasks.append({
+                    "text": task_text,
+                    "priority": priority,
+                    "done": done,
+                })
 
 
-# ---------------------------- ADD TASK ------------------------------- #
+# =========================================================
+# TASK MANAGEMENT
+# =========================================================
 
-def add_task():
+def get_task_stats():
+    total = len(tasks)
+    completed = sum(1 for task in tasks if task["done"])
+    return total, completed
 
-    global task_count
 
-    task = task_entry.get().strip()
-
+def add_task(event=None):
+    task_text = task_entry.get().strip()
     priority = priority_var.get()
 
-    if priority == "High":
+    if not task_text:
+        task_entry.focus_set()
+        return
 
-        priority_icon = "🔥"
-        priority_color = RED
+    tasks.append({
+        "text": task_text,
+        "priority": priority,
+        "done": False,
+    })
 
-    elif priority == "Medium":
+    task_entry.delete(0, tk.END)
 
-        priority_icon = "🟡"
-        priority_color = ORANGE
+    render_tasks()
+    refresh_dashboard()
+    save_data()
 
-    else:
+    task_entry.focus_set()
 
-        priority_icon = "🟢"
-        priority_color = GREEN
 
-    if task:
+def toggle_task(index):
+    if not 0 <= index < len(tasks):
+        return
 
-        task_count += 1
-        current_row = 9 + task_count
+    tasks[index]["done"] = not tasks[index]["done"]
 
-        # Priority colored dot
-        priority_label = Label(
-            main_frame,
-            text="●",
+    render_tasks()
+    refresh_dashboard()
+    check_badges()
+    save_data()
+
+
+def delete_task(index):
+    if not 0 <= index < len(tasks):
+        return
+
+    del tasks[index]
+
+    render_tasks()
+    refresh_dashboard()
+    check_badges()
+    save_data()
+
+
+def edit_task(index):
+    if not 0 <= index < len(tasks):
+        return
+
+    task = tasks[index]
+
+    dialog = tk.Toplevel(root)
+    dialog.title("Edit Task")
+    dialog.geometry("420x250")
+    dialog.resizable(False, False)
+    dialog.configure(bg=BG)
+    dialog.transient(root)
+    dialog.grab_set()
+
+    tk.Label(
+        dialog,
+        text="Edit your task",
+        bg=BG,
+        fg=TEXT,
+        font=(FONT_NAME, 18, "bold"),
+    ).pack(anchor="w", padx=24, pady=(22, 14))
+
+    entry = tk.Entry(
+        dialog,
+        font=(FONT_NAME, 11),
+        relief="flat",
+        highlightthickness=1,
+        highlightbackground=BORDER,
+    )
+
+    entry.pack(fill="x", padx=24, ipady=9)
+    entry.insert(0, task["text"])
+    entry.focus_set()
+
+    priority_row = tk.Frame(dialog, bg=BG)
+    priority_row.pack(fill="x", padx=24, pady=15)
+
+    tk.Label(
+        priority_row,
+        text="Priority",
+        bg=BG,
+        fg=MUTED,
+        font=(FONT_NAME, 10),
+    ).pack(side="left")
+
+    edit_priority = tk.StringVar(value=task["priority"])
+
+    ttk.Combobox(
+        priority_row,
+        textvariable=edit_priority,
+        values=list(PRIORITIES.keys()),
+        state="readonly",
+        width=14,
+    ).pack(side="right")
+
+    def save_edit():
+        new_text = entry.get().strip()
+
+        if not new_text:
+            messagebox.showinfo(
+                "Task required",
+                "Please enter a task name.",
+                parent=dialog,
+            )
+            return
+
+        task["text"] = new_text
+        task["priority"] = edit_priority.get()
+
+        render_tasks()
+        refresh_dashboard()
+        save_data()
+
+        dialog.destroy()
+
+    create_button(
+        dialog,
+        "Save changes",
+        save_edit,
+    ).pack(anchor="e", padx=24, pady=(0, 18))
+
+    entry.bind("<Return>", lambda event: save_edit())
+
+
+def render_tasks():
+    for widget in task_list.winfo_children():
+        widget.destroy()
+
+    total, completed = get_task_stats()
+
+    task_count_label.config(
+        text=f"{total} task{'s' if total != 1 else ''}"
+    )
+
+    if not tasks:
+        tk.Label(
+            task_list,
+            text="No tasks yet.\nAdd one above to get started ✨",
+            bg=CARD,
+            fg=MUTED,
+            font=(FONT_NAME, 11),
+            pady=30,
+        ).pack(fill="x")
+
+        return
+
+    for index, task in enumerate(tasks):
+        row = tk.Frame(task_list, bg=CARD)
+        row.pack(fill="x", padx=12, pady=5)
+
+        icon, priority_color = PRIORITIES[task["priority"]]
+
+        checkbox_text = "✓" if task["done"] else "○"
+        checkbox_bg = GREEN if task["done"] else "#F3F4F6"
+        checkbox_fg = "white" if task["done"] else MUTED
+
+        tk.Button(
+            row,
+            text=checkbox_text,
+            command=lambda i=index: toggle_task(i),
+            bg=checkbox_bg,
+            fg=checkbox_fg,
+            activebackground=checkbox_bg,
+            relief="flat",
+            bd=0,
+            width=3,
+            font=(FONT_NAME, 11, "bold"),
+            cursor="hand2",
+        ).pack(side="left", padx=(0, 8))
+
+        tk.Label(
+            row,
+            text=task["text"],
+            bg=CARD,
+            fg="#9CA3AF" if task["done"] else TEXT,
+            font=(
+                FONT_NAME,
+                10,
+                "overstrike" if task["done"] else "normal",
+            ),
+            anchor="w",
+            justify="left",
+            wraplength=240,
+        ).pack(side="left", fill="x", expand=True)
+
+        tk.Label(
+            row,
+            text=f"{icon} {task['priority']}",
+            bg="#FFF1F2" if task["priority"] == "High"
+            else "#FFFBEB" if task["priority"] == "Medium"
+            else "#F0FDF4",
             fg=priority_color,
-            bg=YELLOW,
-            font=(FONT_NAME, 15, "bold")
-        )
+            font=(FONT_NAME, 8, "bold"),
+            padx=6,
+            pady=4,
+        ).pack(side="left", padx=5)
 
-        priority_label.grid(
-            column=0,
-            row=9 + task_count,
-            padx=(0, 5),
-            pady=3,
-            sticky="e"
-        )
+        create_button(
+            row,
+            "Edit",
+            lambda i=index: edit_task(i),
+            bg="#EEF2FF",
+            fg=PRIMARY,
+            padx=8,
+            pady=6,
+        ).pack(side="left", padx=2)
 
-        # Task label
-        task_label = Label(
-            main_frame,
-            text=f"{priority_icon} ☐ {task}",
-            fg="#333333",
-            bg=YELLOW,
-            font=(FONT_NAME, 12),
-            cursor="hand2"
-        )
+        create_button(
+            row,
+            "×",
+            lambda i=index: delete_task(i),
+            bg="#FEF2F2",
+            fg=RED,
+            padx=9,
+            pady=6,
+        ).pack(side="left", padx=2)
 
-        task_label.grid(
-            column=1,
-            columnspan=1,
-            row=9 + task_count,
-            pady=3,
-            sticky="w"
-        )
-
-        task_label.bind(
-            "<Button-1>",
-            lambda event, label=task_label:
-            complete_task(label)
-        )
-
-        # Delete button
-        delete_button = Button(
-            main_frame,
-            text="🗑",
-            font=(FONT_NAME, 9),
-            highlightthickness=0
-        )
-
-        delete_button.config(
-            command=lambda
-            label=task_label,
-            priority=priority_label,
-            button=delete_button:
-            delete_task(
-                label,
-                priority,
-                button
-            )
-        )
-
-        delete_button.grid(
-            column=2,
-            row=current_row,
-            padx=5
-        )
-
-        # Edit button
-        edit_button = Button(
-            main_frame,
-            text="✏️",
-            font=(FONT_NAME, 9),
-            highlightthickness=0,
-            command=lambda
-            label=task_label,
-            priority=priority_label:
-            edit_task(
-                label,
-                priority
-            )
-        )
-
-        edit_button.grid(
-            column=3,
-            row=current_row,
-            padx=3
-        )
-
-        task_entry.delete(
-            0,
-            END
-        )
-
-        update_task_progress()
-        save_tasks()
+        if index < len(tasks) - 1:
+            tk.Frame(
+                task_list,
+                bg="#F1F2F6",
+                height=1,
+            ).pack(fill="x", padx=12, pady=3)
 
 
-# ---------------------------- NOTIFICATION ------------------------------- #
+# =========================================================
+# POMODORO TIMER
+# =========================================================
 
-def send_notification(title, message):
+def duration_for_mode(mode):
+    if mode == "Focus":
+        return WORK_MIN * 60
 
-    toast = Notification(
-        app_id="Focus Mode",
-        title=title,
-        msg=message
+    if mode == "Short break":
+        return SHORT_BREAK_MIN * 60
+
+    return LONG_BREAK_MIN * 60
+
+
+def update_timer_display():
+    minutes, seconds = divmod(max(0, seconds_left), 60)
+
+    timer_canvas.itemconfig(
+        timer_text_id,
+        text=f"{minutes:02d}:{seconds:02d}",
     )
 
-    toast.show()
-
-
-# ---------------------------- TIMER RESET ------------------------------- #
-
-def reset_timer():
-
-    global reps
-    global timer
-
-    if timer is not None:
-
-        window.after_cancel(timer)
-
-        timer = None
-
-    canvas.itemconfig(
-        timer_text,
-        text="00:00"
+    timer_canvas.itemconfig(
+        timer_mode_id,
+        text=timer_mode.upper(),
     )
 
-    title_label.config(
-        text="FOCUS MODE",
-        fg=GREEN
+    full_duration = duration_for_mode(timer_mode)
+
+    progress = seconds_left / max(1, full_duration)
+
+    timer_canvas.itemconfig(
+        timer_arc_id,
+        extent=-360 * progress,
     )
 
-    check_mark.config(
-        text=""
-    )
-
-    # Reset only the timer.
-    # Keep today's completed sessions and focus time.
-    reps = 0
-
-    update_session_count()
-    update_focus_time()
-
-
-# ---------------------------- TIMER START ------------------------------- #
-
-def start_timer():
-
-    global reps
-
-    reps += 1
-
-    work_sec = WORK_MIN * 60
-    short_break_sec = SHORT_BREAK_MIN * 60
-    long_break_sec = LONG_BREAK_MIN * 60
-
-    if reps % 8 == 0:
-
-        title_label.config(
-            text="Long Break",
-            fg=RED
+    if timer_running:
+        start_pause_button.config(text="Pause timer")
+    elif seconds_left != full_duration:
+        start_pause_button.config(text="Resume timer")
+    else:
+        start_pause_button.config(
+            text="Start focus" if timer_mode == "Focus"
+            else "Start break"
         )
 
-        count_down(long_break_sec)
 
-    elif reps % 2 == 0:
+def set_mode(mode):
+    global timer_mode, seconds_left
 
-        title_label.config(
-            text="Short Break",
-            fg=PINK
-        )
+    timer_mode = mode
+    seconds_left = duration_for_mode(mode)
 
-        count_down(short_break_sec)
+    update_timer_display()
+
+
+def tick():
+    global seconds_left, timer_after_id
+
+    timer_after_id = None
+
+    if not timer_running:
+        return
+
+    if seconds_left > 0:
+        seconds_left -= 1
+        update_timer_display()
+
+        timer_after_id = root.after(1000, tick)
 
     else:
-
-        title_label.config(
-            text="Work",
-            fg=GREEN
-        )
-
-        count_down(work_sec)
+        finish_interval()
 
 
-# ---------------------------- COUNTDOWN ------------------------------- #
-
-def count_down(count):
-
-    global timer
+def finish_interval():
     global completed_sessions
     global focus_minutes
+    global timer_running
 
-    count_min = math.floor(count / 60)
+    timer_running = False
+    start_pause_button.config(text="Start focus")
 
-    count_sec = count % 60
+    if timer_mode == "Focus":
+        completed_sessions += 1
+        focus_minutes += WORK_MIN
 
-    if count_sec < 10:
-        count_sec = f"0{count_sec}"
-
-    canvas.itemconfig(
-        timer_text,
-        text=f"{count_min}:{count_sec}"
-    )
-
-    if count > 0:
-
-        timer = window.after(
-            1000,
-            count_down,
-            count - 1
+        notify(
+            "Focus session complete!",
+            "Great work. Take a well-earned break.",
         )
-
-    else:
-
-        if reps % 2 == 1:
-
-            completed_sessions += 1
-
-            focus_minutes += WORK_MIN
-
-            update_session_count()
-            update_focus_time()
-            save_tasks()
-
-            send_notification(
-                "🎉 Focus Session Complete!",
-                "Great job! Time for a break."
-            )
-
-        else:
-
-            send_notification(
-                "⏰ Break Finished!",
-                "Your break is over. Ready to focus?"
-            )
-
-        marks = ""
-
-        work_sessions = math.floor(reps / 2)
-
-        for _ in range(work_sessions):
-            marks += "✔"
-
-        check_mark.config(
-            text=marks
-        )
-
-        start_timer()
-        update_session_count()
-        update_focus_time()
 
         check_badges()
 
-        save_tasks()
+        if completed_sessions % LONG_BREAK_EVERY == 0:
+            next_mode = "Long break"
+        else:
+            next_mode = "Short break"
 
-# ---------------------------- SCROLL ------------------------------- #
-# ---------------------------- WINDOW + SCROLL ------------------------------- #
+        set_mode(next_mode)
 
-window = Tk()
+        status_label.config(
+            text="Focus session complete — take a break!",
+            fg=GREEN,
+        )
 
-window.title("Pomodoro")
+    else:
+        notify(
+            "Break finished",
+            "Ready to focus again?",
+        )
 
-window.geometry("700x700")
+        set_mode("Focus")
 
-window.config(
-    bg=YELLOW
+        status_label.config(
+            text="Break finished — ready for another session?",
+            fg=PRIMARY,
+        )
+
+    refresh_dashboard()
+    save_data()
+
+
+def toggle_timer():
+    global timer_running, timer_after_id
+
+    if timer_running:
+        timer_running = False
+
+        if timer_after_id is not None:
+            root.after_cancel(timer_after_id)
+            timer_after_id = None
+
+        update_timer_display()
+
+        status_label.config(
+            text="Timer paused.",
+            fg=MUTED,
+        )
+
+        return
+
+    timer_running = True
+
+    update_timer_display()
+
+    status_label.config(
+        text=f"{timer_mode} session in progress. You've got this!",
+        fg=PRIMARY,
+    )
+
+    timer_after_id = root.after(1000, tick)
+
+
+def reset_timer():
+    global timer_running, timer_after_id, seconds_left
+
+    timer_running = False
+
+    if timer_after_id is not None:
+        root.after_cancel(timer_after_id)
+        timer_after_id = None
+
+    seconds_left = duration_for_mode(timer_mode)
+
+    status_label.config(
+        text="Timer reset. Ready when you are.",
+        fg=MUTED,
+    )
+
+    update_timer_display()
+
+
+def choose_timer_mode(mode):
+    global timer_running, timer_after_id
+
+    if timer_after_id is not None:
+        root.after_cancel(timer_after_id)
+        timer_after_id = None
+
+    timer_running = False
+    set_mode(mode)
+
+    status_label.config(
+        text=f"{mode} selected.",
+        fg=MUTED,
+    )
+
+
+# =========================================================
+# ACHIEVEMENTS
+# =========================================================
+
+def check_badges():
+    total, done = get_task_stats()
+
+    conditions = {
+        "first_task": done >= 1,
+        "task_crusher": done >= 5,
+        "productivity_pro": done >= 10,
+        "focus_starter": completed_sessions >= 1,
+        "deep_focus": completed_sessions >= 5,
+        "focus_master": completed_sessions >= 10,
+        "perfect_day": total > 0 and done == total,
+    }
+
+    for key, unlocked in conditions.items():
+        if unlocked and not badges[key]:
+            badges[key] = True
+
+            icon, name, description = BADGE_INFO[key]
+
+            notify(
+                f"Achievement unlocked: {name}",
+                f"{icon} {name} — nice work!",
+            )
+
+    render_badges()
+    save_data()
+
+
+def render_badges():
+    for widget in badge_grid.winfo_children():
+        widget.destroy()
+
+    for index, (key, info) in enumerate(BADGE_INFO.items()):
+        icon, name, description = info
+        unlocked = badges[key]
+
+        badge_bg = "#F0FDF4" if unlocked else "#F9FAFB"
+        badge_fg = GREEN if unlocked else "#9CA3AF"
+
+        badge = tk.Frame(
+            badge_grid,
+            bg=badge_bg,
+            highlightbackground=BORDER,
+            highlightthickness=1,
+            padx=8,
+            pady=8,
+        )
+
+        badge.grid(
+            row=index // 4,
+            column=index % 4,
+            padx=4,
+            pady=4,
+            sticky="nsew",
+        )
+
+        tk.Label(
+            badge,
+            text=icon if unlocked else "🔒",
+            bg=badge_bg,
+            fg=badge_fg,
+            font=(FONT_NAME, 17),
+        ).pack()
+
+        tk.Label(
+            badge,
+            text=name,
+            bg=badge_bg,
+            fg=TEXT if unlocked else MUTED,
+            font=(FONT_NAME, 8, "bold"),
+        ).pack(pady=(3, 2))
+
+        tk.Label(
+            badge,
+            text="Unlocked" if unlocked else description,
+            bg=badge_bg,
+            fg=badge_fg,
+            font=(FONT_NAME, 7),
+            wraplength=100,
+        ).pack()
+
+
+# =========================================================
+# DASHBOARD
+# =========================================================
+
+def refresh_dashboard():
+    total, done = get_task_stats()
+
+    percent = int(done / total * 100) if total else 0
+
+    tasks_value.config(text=f"{done}/{total}")
+    sessions_value.config(text=str(completed_sessions))
+    focus_value.config(text=f"{focus_minutes} min")
+
+    progress_percent.config(text=f"{percent}%")
+    progress_bar["value"] = percent
+
+    render_badges()
+
+
+# =========================================================
+# OPEN THE SEPARATE SKILL LEARNING APP
+# =========================================================
+
+def open_skill_learning():
+    if not SKILL_FILE.exists():
+        messagebox.showerror(
+            "File not found",
+            "Could not find 'skill learning.py'.\n\n"
+            "Place it in the same folder as main.py.",
+        )
+        return
+
+    try:
+        subprocess.Popen([
+            sys.executable,
+            str(SKILL_FILE),
+        ])
+    except OSError as error:
+        messagebox.showerror(
+            "Could not open Skill Learning",
+            str(error),
+        )
+
+
+# =========================================================
+# USER INTERFACE
+# =========================================================
+
+# Header
+header = tk.Frame(root, bg=BG)
+header.pack(fill="x", padx=28, pady=(22, 16))
+
+header_left = tk.Frame(header, bg=BG)
+header_left.pack(side="left")
+
+tk.Label(
+    header_left,
+    text="Focus Mode",
+    bg=BG,
+    fg=TEXT,
+    font=(FONT_NAME, 25, "bold"),
+).pack(anchor="w")
+
+tk.Label(
+    header_left,
+    text=f"Build focus, one session at a time  •  {TODAY}",
+    bg=BG,
+    fg=MUTED,
+    font=(FONT_NAME, 10),
+).pack(anchor="w", pady=(3, 0))
+
+create_button(
+    header,
+    "📚 Skill Learning",
+    open_skill_learning,
+).pack(side="right", pady=5)
+
+# Main two-column layout
+content = tk.Frame(root, bg=BG)
+content.pack(
+    fill="both",
+    expand=True,
+    padx=28,
+    pady=(0, 24),
 )
 
+content.columnconfigure(0, weight=5, uniform="columns")
+content.columnconfigure(1, weight=6, uniform="columns")
+content.rowconfigure(0, weight=1)
 
-# ---------------------------- MAIN CANVAS ------------------------------- #
-
-main_canvas = Canvas(
-    window,
-    bg=YELLOW,
-    highlightthickness=0
+left_column = tk.Frame(content, bg=BG)
+left_column.grid(
+    row=0,
+    column=0,
+    sticky="nsew",
+    padx=(0, 12),
 )
 
-main_canvas.pack(
+right_column = tk.Frame(content, bg=BG)
+right_column.grid(
+    row=0,
+    column=1,
+    sticky="nsew",
+    padx=(12, 0),
+)
+
+# ---------------- TIMER CARD ----------------
+
+timer_card = create_card(left_column)
+timer_card.pack(fill="x", pady=(0, 14))
+
+tk.Label(
+    timer_card,
+    text="FOCUS TIMER",
+    bg=CARD,
+    fg=MUTED,
+    font=(FONT_NAME, 9, "bold"),
+).pack(pady=(20, 2))
+
+tk.Label(
+    timer_card,
+    text="Small steps. Real progress.",
+    bg=CARD,
+    fg=TEXT,
+    font=(FONT_NAME, 15, "bold"),
+).pack()
+# Tomato image in the timer
+tomato_path = Path(__file__).resolve().parent / "tomato.png"
+
+tomato_image = PhotoImage(file=str(tomato_path))
+
+# Resize the image if it is too large
+if tomato_image.width() > 180 or tomato_image.height() > 180:
+    tomato_image = tomato_image.subsample(
+        max(1, math.ceil(tomato_image.width() / 180)),
+        max(1, math.ceil(tomato_image.height() / 180))
+    )
+
+timer_canvas = tk.Canvas(
+    timer_card,
+    width=270,
+    height=270,
+    bg=CARD,
+    highlightthickness=0,
+)
+
+timer_canvas.pack(pady=(8, 4))
+
+timer_canvas.create_image(
+    135, 135,
+    image=tomato_image
+)
+
+timer_mode_id = timer_canvas.create_text(
+    135, 155,
+    text="FOCUS",
+    fill=TEXT,
+    font=(FONT_NAME, 10, "bold"),
+)
+
+timer_text_id = timer_canvas.create_text(
+    135, 125,
+    text="25:00",
+    fill=TEXT,
+    font=(FONT_NAME, 24, "bold"),
+)
+
+timer_arc_id = None
+
+timer_controls = tk.Frame(timer_card, bg=CARD)
+timer_controls.pack(pady=(0, 10))
+
+start_pause_button = create_button(
+    timer_controls,
+    "Start focus",
+    toggle_timer,
+)
+
+start_pause_button.pack(side="left", padx=5)
+
+create_button(
+    timer_controls,
+    "Reset",
+    reset_timer,
+    bg="#F3F4F6",
+    fg=TEXT,
+).pack(side="left", padx=5)
+
+mode_controls = tk.Frame(timer_card, bg=CARD)
+mode_controls.pack(pady=(0, 10))
+
+create_button(
+    mode_controls,
+    "Focus · 25m",
+    lambda: choose_timer_mode("Focus"),
+    bg="#F3F4F6",
+    fg=TEXT,
+    padx=8,
+    pady=7,
+).pack(side="left", padx=3)
+
+create_button(
+    mode_controls,
+    "Short · 5m",
+    lambda: choose_timer_mode("Short break"),
+    bg="#F3F4F6",
+    fg=TEXT,
+    padx=8,
+    pady=7,
+).pack(side="left", padx=3)
+
+create_button(
+    mode_controls,
+    "Long · 20m",
+    lambda: choose_timer_mode("Long break"),
+    bg="#F3F4F6",
+    fg=TEXT,
+    padx=8,
+    pady=7,
+).pack(side="left", padx=3)
+
+status_label = tk.Label(
+    timer_card,
+    text="Ready to focus? Start a session when you're ready.",
+    bg=CARD,
+    fg=MUTED,
+    font=(FONT_NAME, 9),
+    wraplength=380,
+)
+
+status_label.pack(pady=(0, 18))
+
+# ---------------- DASHBOARD CARD ----------------
+
+dashboard_card = create_card(left_column)
+dashboard_card.pack(fill="both", expand=True)
+
+tk.Label(
+    dashboard_card,
+    text="Today's overview",
+    bg=CARD,
+    fg=TEXT,
+    font=(FONT_NAME, 15, "bold"),
+).pack(anchor="w", padx=18, pady=(18, 4))
+
+tk.Label(
+    dashboard_card,
+    text="Your progress so far",
+    bg=CARD,
+    fg=MUTED,
+    font=(FONT_NAME, 9),
+).pack(anchor="w", padx=18)
+
+stats = tk.Frame(dashboard_card, bg=CARD)
+stats.pack(fill="x", padx=12, pady=12)
+
+for column in range(3):
+    stats.columnconfigure(column, weight=1)
+
+
+def create_stat_tile(parent, column, title, initial, color):
+    tile = tk.Frame(
+        parent,
+        bg="#F8F9FC",
+        padx=8,
+        pady=12,
+    )
+
+    tile.grid(
+        row=0,
+        column=column,
+        padx=5,
+        sticky="nsew",
+    )
+
+    tk.Label(
+        tile,
+        text=title,
+        bg="#F8F9FC",
+        fg=MUTED,
+        font=(FONT_NAME, 9),
+    ).pack()
+
+    value = tk.Label(
+        tile,
+        text=initial,
+        bg="#F8F9FC",
+        fg=color,
+        font=(FONT_NAME, 17, "bold"),
+    )
+
+    value.pack(pady=(5, 0))
+
+    return value
+
+
+tasks_value = create_stat_tile(
+    stats, 0, "Tasks", "0/0", PRIMARY
+)
+
+sessions_value = create_stat_tile(
+    stats, 1, "Sessions", "0", GREEN
+)
+
+focus_value = create_stat_tile(
+    stats, 2, "Focus time", "0 min", ORANGE
+)
+
+progress_row = tk.Frame(dashboard_card, bg=CARD)
+progress_row.pack(
+    fill="x",
+    padx=18,
+    pady=(4, 18),
+)
+
+progress_top = tk.Frame(progress_row, bg=CARD)
+progress_top.pack(fill="x")
+
+progress_caption = tk.Label(
+    progress_top,
+    text="Today's tasks completed",
+    bg=CARD,
+    fg=MUTED,
+    font=(FONT_NAME, 9),
+)
+
+progress_caption.pack(side="left")
+
+progress_percent = tk.Label(
+    progress_top,
+    text="0%",
+    bg=CARD,
+    fg=PRIMARY,
+    font=(FONT_NAME, 10, "bold"),
+)
+
+progress_percent.pack(side="right")
+
+progress_bar = ttk.Progressbar(
+    progress_row,
+    maximum=100,
+    mode="determinate",
+)
+
+progress_bar.pack(fill="x", pady=(8, 0))
+
+# ---------------- TASK CARD ----------------
+
+tasks_card = create_card(right_column)
+tasks_card.pack(fill="both", expand=True, pady=(0, 14))
+
+tasks_heading = tk.Frame(tasks_card, bg=CARD)
+tasks_heading.pack(
+    fill="x",
+    padx=18,
+    pady=(18, 12),
+)
+
+tk.Label(
+    tasks_heading,
+    text="Today's tasks",
+    bg=CARD,
+    fg=TEXT,
+    font=(FONT_NAME, 16, "bold"),
+).pack(side="left")
+
+task_count_label = tk.Label(
+    tasks_heading,
+    text="0 tasks",
+    bg="#F3F4F6",
+    fg=MUTED,
+    font=(FONT_NAME, 9, "bold"),
+    padx=9,
+    pady=4,
+)
+
+task_count_label.pack(side="right")
+
+task_form = tk.Frame(tasks_card, bg=CARD)
+task_form.pack(
+    fill="x",
+    padx=18,
+    pady=(0, 14),
+)
+
+task_entry = tk.Entry(
+    task_form,
+    font=(FONT_NAME, 10),
+    relief="flat",
+    bg="#F8F9FC",
+    fg=TEXT,
+    insertbackground=TEXT,
+    highlightthickness=1,
+    highlightbackground=BORDER,
+)
+
+task_entry.pack(
+    fill="x",
+    ipady=10,
+    pady=(0, 9),
+)
+
+task_entry.bind("<Return>", add_task)
+
+form_bottom = tk.Frame(task_form, bg=CARD)
+form_bottom.pack(fill="x")
+
+priority_var = tk.StringVar(value="Medium")
+
+priority_menu = ttk.Combobox(
+    form_bottom,
+    textvariable=priority_var,
+    values=list(PRIORITIES.keys()),
+    state="readonly",
+    width=12,
+)
+
+priority_menu.pack(side="left")
+
+create_button(
+    form_bottom,
+    "+ Add task",
+    add_task,
+).pack(side="right")
+
+tk.Frame(
+    tasks_card,
+    bg=BORDER,
+    height=1,
+).pack(fill="x", padx=18)
+
+# Scrollable task list
+task_canvas = tk.Canvas(
+    tasks_card,
+    bg=CARD,
+    highlightthickness=0,
+)
+
+task_scrollbar = ttk.Scrollbar(
+    tasks_card,
+    orient="vertical",
+    command=task_canvas.yview,
+)
+
+task_list = tk.Frame(task_canvas, bg=CARD)
+
+task_window_id = task_canvas.create_window(
+    (0, 0),
+    window=task_list,
+    anchor="nw",
+)
+
+task_canvas.configure(
+    yscrollcommand=task_scrollbar.set,
+)
+
+task_canvas.pack(
     side="left",
     fill="both",
-    expand=True
+    expand=True,
+    padx=(5, 0),
+    pady=(5, 12),
 )
 
-
-# ---------------------------- SCROLLBAR ------------------------------- #
-
-scrollbar = Scrollbar(
-    window,
-    orient="vertical",
-    command=main_canvas.yview
-)
-
-scrollbar.pack(
+task_scrollbar.pack(
     side="right",
-    fill="y"
+    fill="y",
+    pady=(5, 12),
 )
 
 
-# Connect scrollbar to canvas
-
-main_canvas.configure(
-    yscrollcommand=scrollbar.set
-)
-
-
-# ---------------------------- MAIN FRAME ------------------------------- #
-
-main_frame = Frame(
-    main_canvas,
-    bg=YELLOW
-)
-
-main_canvas.create_window(
-    (0, 0),
-    window=main_frame,
-    anchor="nw"
-)
-
-
-# ---------------------------- UPDATE SCROLL REGION ------------------------------- #
-
-def update_scrollregion(event):
-
-    main_canvas.configure(
-        scrollregion=main_canvas.bbox("all")
+def update_task_scroll_region(event=None):
+    task_canvas.configure(
+        scrollregion=task_canvas.bbox("all")
     )
 
 
-main_frame.bind(
+def resize_task_window(event):
+    task_canvas.itemconfigure(
+        task_window_id,
+        width=event.width,
+    )
+
+
+task_list.bind(
     "<Configure>",
-    update_scrollregion
+    update_task_scroll_region,
 )
 
-
-# ---------------------------- MOUSE SCROLL ------------------------------- #
-
-def scroll_with_mouse(event):
-
-    main_canvas.yview_scroll(
-        int(-1 * (event.delta / 120)),
-        "units"
-    )
-
-
-main_canvas.bind_all(
-    "<MouseWheel>",
-    scroll_with_mouse
-)
-
-
-    # ---------------------------- AI ROADMAP ------------------------------- #
-def generate_ai_roadmap():
-
-    topic = roadmap_entry.get().strip()
-
-    if not topic or topic == "What do you want to learn?":
-
-        roadmap_output.config(
-            text="⚠️ Please enter a topic first."
-        )
-
-        return
-
-    roadmap_output.config(
-        text="🤖 Gemini is creating your roadmap..."
-    )
-
-    window.update_idletasks()
-
-    try:
-
-        prompt = f"""
-Create a beginner-friendly learning roadmap for:
-
-{topic}
-
-The learner is preparing for interviews.
-
-Create 5 phases.
-
-For every phase give:
-
-PHASE X: Phase Name
-
-Topics:
-1. Topic
-2. Topic
-3. Topic
-4. Topic
-
-Estimated Time:
-1. XX minutes
-2. XX minutes
-3. XX minutes
-4. XX minutes
-
-Pomodoro Sessions: X
-
-YouTube Search:
-Give one YouTube search query.
-
-At the end give:
-
-🎯 FINAL GOAL:
-What the learner should be able to do after completing this roadmap.
-
-Rules:
-- Start from beginner level.
-- Gradually move to advanced topics.
-- Focus on practical learning.
-- Give realistic estimated time for every topic.
-- The learner can modify the suggested time according to their needs.
-- Do not create fake YouTube URLs.
-- Give YouTube search queries only.
-"""
-
-        response = gemini_client.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                automatic_function_calling=types.AutomaticFunctionCallingConfig(
-                    disable=True
-                )
-            )
-        )
-
-        roadmap_output.config(
-            text=response.text
-        )
-
-    except Exception as e:
-
-        print("GEMINI ERROR:", e)
-
-        roadmap_output.config(
-            text="⚠️ Gemini limit reached or an error occurred. Please try again later."
-        )
-
-# ---------------------------- YOUTUBE SEARCH ------------------------------- #
-
-def open_youtube_search():
-
-    query = roadmap_entry.get().strip()
-
-    if query and query != "What do you want to learn?":
-
-        url = (
-            "https://www.youtube.com/results?search_query="
-            + query.replace(" ", "+")
-        )
-
-        webbrowser.open(url)
-
-def generate_job_roadmap():
-
-    job = job_entry.get().strip()
-
-    if not job:
-        job_output.config(
-            text="⚠️ Please enter a job role."
-        )
-        return
-
-    job_output.config(
-        text="🤖 Gemini is analyzing the job requirements..."
-    )
-
-    window.update()
-
-    prompt = f"""
-You are an expert career advisor and job market analyst.
-
-The user wants to prepare for this job:
-
-{job}
-
-Create a beginner-friendly preparation roadmap based on the skills
-normally required for this role.
-
-Give the answer in this format:
-
-🎯 TARGET ROLE
-Job role
-
-📚 MUST LEARN
-1. Skill
-2. Skill
-3. Skill
-4. Skill
-5. Skill
-
-💻 PROGRAMMING
-- Languages to learn
-
-🧠 DSA
-- Important DSA topics
-
-🗄 DATABASE
-- Important database topics
-
-⚙️ FRAMEWORKS
-- Important frameworks
-
-☁️ TOOLS
-- Git
-- Docker
-- Cloud
-- Other important tools
-
-📖 CORE CS
-- OOP
-- DBMS
-- OS
-- Computer Networks
-- Other relevant subjects
-
-🤖 AI SKILLS
-Mention useful AI skills if relevant to this job.
-
-🚀 PROJECTS
-Give 3 projects that would strengthen the resume.
-
-🎤 INTERVIEW PREPARATION
-Give important interview topics.
-
-⭐ PRIORITY ORDER
-Tell the user what to learn first, second, third, etc.
-
-⏱ STUDY PLAN
-Give an approximate 8-12 week learning plan.
-
-Keep it practical and beginner friendly.
-"""
-
-    try:
-
-        response = gemini_client.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=prompt
-        )
-
-        job_output.config(
-            text=response.text
-        )
-
-    except Exception as e:
-
-        job_output.config(
-            text=f"❌ Gemini Error:\n{e}"
-        )
-# ---------------------------- PRIORITY ------------------------------- #
-priority_var = StringVar()
-priority_var.set("Medium")
-
-priority_menu = OptionMenu(
-    main_frame,
-    priority_var,
-    "High",
-    "Medium",
-    "Low"
-)
-
-priority_menu.config(
-    font=(FONT_NAME, 10, "bold"),
-    highlightthickness=0
-)
-
-priority_menu.grid(
-    column=1,
-    row=9,
-    padx=5
-)
-
-
-# ---------------------------- HEADER ------------------------------- #
-
-title_label = Label(
-    main_frame,
-    text="FOCUS MODE",
-    fg=GREEN,
-    font=(FONT_NAME, 40, "bold"),
-    bg=YELLOW
-)
-
-title_label.grid(
-    column=1,
-    row=0
-)
-
-
-subtitle_label = Label(
-    main_frame,
-    text=f"Stay focused. You've got this! 🍅  |  {today}",
-    fg="#555555",
-    font=(FONT_NAME, 12),
-    bg=YELLOW
-)
-
-subtitle_label.grid(
-    column=1,
-    row=1,
-    pady=(0, 20)
-)
-
-
-# ---------------------------- TIMER CANVAS ------------------------------- #
-
-canvas = Canvas(
-    main_frame,
-    width=300,
-    height=300,
-    bg=YELLOW,
-    highlightthickness=0
-)
-
-tomato_img = PhotoImage(
-    file="tomato.png",
-     master=window
-)
-
-canvas.create_image(
-    150,
-    150,
-    image=tomato_img
-)
-
-timer_text = canvas.create_text(
-    150,
-    170,
-    text="00:00",
-    fill="white",
-    font=(FONT_NAME, 28, "bold")
-)
-
-canvas.grid(
-    column=1,
-    row=2
-)
-
-
-# ---------------------------- BUTTONS ------------------------------- #
-
-start_button = Button(
-    main_frame,
-    text="Start",
-    highlightthickness=0,
-    font=(FONT_NAME, 18, "bold"),
-    command=start_timer
-)
-
-start_button.grid(
-    column=0,
-    row=3
-)
-
-
-reset_button = Button(
-    main_frame,
-    text="Reset",
-    highlightthickness=0,
-    font=(FONT_NAME, 18, "bold"),
-    command=reset_timer
-)
-
-reset_button.grid(
-    column=2,
-    row=3
-)
-
-
-# ---------------------------- SESSION MARKS ------------------------------- #
-
-check_mark = Label(
-    main_frame,
-    fg=GREEN,
-    bg=YELLOW,
-    font=(FONT_NAME, 18, "bold")
-)
-
-check_mark.grid(
-    column=1,
-    row=4
-)
-
-
-# ---------------------------- TASK SECTION ------------------------------- #
-
-task_title = Label(
-    main_frame,
-    text="Today's Tasks",
-    fg=RED,
-    bg=YELLOW,
-    font=(FONT_NAME, 20, "bold")
-)
-
-task_title.grid(
-    column=1,
-    row=5,
-    pady=(30, 10)
-)
-
-
-task_progress = Label(
-    main_frame,
-    text="Tasks Completed: 0/0",
-    fg="#555555",
-    bg=YELLOW,
-    font=(FONT_NAME, 11)
-)
-
-task_progress.grid(
-    column=1,
-    row=6
-)
-
-
-session_label = Label(
-    main_frame,
-    text="🍅 Sessions: 0",
-    fg=RED,
-    bg=YELLOW,
-    font=(FONT_NAME, 12, "bold")
-)
-
-session_label.grid(
-    column=1,
-    row=7,
-    pady=(20, 5)
-)
-
-
-focus_time_label = Label(
-    main_frame,
-    text="⏱ Focus Time: 0 min",
-    fg="#555555",
-    bg=YELLOW,
-    font=(FONT_NAME, 12, "bold")
-)
-
-focus_time_label.grid(
-    column=1,
-    row=8
-)
-
-
-# ---------------------------- SMART FOCUS UI ------------------------------- #
-
-smart_focus_title = Label(
-    main_frame,
-    text="🤖 Smart Focus",
-    fg=RED,
-    bg=YELLOW,
-    font=(FONT_NAME, 20, "bold")
+task_canvas.bind(
+    "<Configure>",
+    resize_task_window,
 )
 
-smart_focus_title.grid(
-    column=1,
-    row=20,
-    pady=(30, 10)
-)
-
-
-smart_focus_label = Label(
-    main_frame,
-    text="Click below to find your best task to focus on.",
-    fg="#555555",
-    bg=YELLOW,
-    font=(FONT_NAME, 12),
-    justify="center"
-)
-
-smart_focus_label.grid(
-    column=1,
-    row=21,
-    pady=5
-)
-
-
-smart_focus_button = Button(
-    main_frame,
-    text="🤖 Find My Focus",
-    font=(FONT_NAME, 12, "bold"),
-    highlightthickness=0,
-    command=smart_focus
-)
-
-smart_focus_button.grid(
-    column=1,
-    row=22,
-    pady=(5, 20)
-)
-# ---------------------------- AI ROADMAP UI ------------------------------- #
-
-roadmap_title = Label(
-    main_frame,
-    text="🧠 AI Learning Roadmap",
-    fg=RED,
-    bg=YELLOW,
-    font=(FONT_NAME, 20, "bold")
-)
-
-roadmap_title.grid(
-    column=1,
-    row=24,
-    pady=(30, 10)
-)
-
-
-roadmap_entry = Entry(
-    main_frame,
-    width=25,
-    font=(FONT_NAME, 12)
-)
-
-roadmap_entry.grid(
-    column=1,
-    row=26,
-    pady=5
-)
-
-
-roadmap_entry.insert(
-    0,
-    "What do you want to learn?"
-)
-
-
-roadmap_button = Button(
-    main_frame,
-    text="🤖 Generate AI Roadmap",
-    font=(FONT_NAME, 12, "bold"),
-    highlightthickness=0,
-    command=generate_ai_roadmap
-)
-
-roadmap_button.grid(
-    column=1,
-    row=27,
-    pady=10
-)
-
-
-roadmap_output = Label(
-    main_frame,
-    text="Your personalized roadmap will appear here.",
-    fg="#333333",
-    bg=YELLOW,
-    font=(FONT_NAME, 10),
-    justify="left",
-    anchor="w",
-    wraplength=550
-)
-
-roadmap_output.grid(
-    column=1,
-    row=41,
-    pady=10,
-    sticky="w"
-)
-job_title = Label(
-    main_frame,
-    text="💼 AI Job Analyzer",
-    fg=RED,
-    bg=YELLOW,
-    font=(FONT_NAME, 20, "bold")
-)
-
-job_title.grid(
-    column=1,
-    row=37,
-    pady=(30, 10)
-)
-
-
-job_entry = Entry(
-    main_frame,
-    width=35,
-    font=(FONT_NAME, 12)
-)
-
-job_entry.grid(
-    column=1,
-    row=38,
-    pady=5
-)
-
-job_entry.insert(
-    0,
-    "Enter target job role..."
-)
-
-
-job_button = Button(
-    main_frame,
-    text="💼 Analyze Job & Create Roadmap",
-    font=(FONT_NAME, 12, "bold"),
-    highlightthickness=0,
-    command=generate_job_roadmap
-)
-
-job_button.grid(
-    column=1,
-    row=39,
-    pady=10
-)
-
-
-job_output = Label(
-    main_frame,
-    text="Your job preparation roadmap will appear here.",
-    fg="#333333",
-    bg=YELLOW,
-    font=(FONT_NAME, 10),
-    justify="left",
-    anchor="w",
-    wraplength=550
-)
-
-job_output.grid(
-    column=1,
-    row=40,
-    pady=10,
-    sticky="w"
-)
-
-
-# ---------------------------- ACHIEVEMENTS UI ------------------------------- #
-
-achievement_title = Label(
-    main_frame,
-    text="🏆 Achievements",
-    fg=RED,
-    bg=YELLOW,
-    font=(FONT_NAME, 20, "bold")
-)
-
-achievement_title.grid(
-    column=1,
-    row=43,
-    pady=(30, 10)
-)
-
-
-achievement_subtitle = Label(
-    main_frame,
-    text="Complete tasks and focus sessions to unlock badges!",
-    fg="#555555",
-    bg=YELLOW,
-    font=(FONT_NAME, 10)
-)
-
-achievement_subtitle.grid(
-    column=1,
-    row=45,
-    pady=(0, 15)
-)
-
-
-badges_frame = Frame(
-    main_frame,
-    bg=YELLOW
-)
-
-badges_frame.grid(
-    column=1,
-    row=46,
-    pady=5
-)
+# ---------------- ACHIEVEMENTS CARD ----------------
 
+achievements_card = create_card(right_column)
+achievements_card.pack(fill="x")
 
-badge_labels = {}
-
-
-badge_info = [
-    ("first_task", "🌱", "First Step"),
-    ("task_crusher", "🔥", "Task Crusher"),
-    ("productivity_pro", "⚡", "Productivity Pro"),
-    ("focus_starter", "🍅", "Focus Starter"),
-    ("deep_focus", "🧠", "Deep Focus"),
-    ("focus_master", "🚀", "Focus Master"),
-    ("perfect_day", "💯", "Perfect Day")
-]
-
-
-for index, (key, icon, name) in enumerate(badge_info):
-
-    badge = Frame(
-        badges_frame,
-        bg="#F3F4F7",
-        width=130,
-        height=85,
-        highlightbackground="#DDDDDD",
-        highlightthickness=1
-    )
-
-    badge.grid(
-        row=index // 4,
-        column=index % 4,
-        padx=5,
-        pady=5
-    )
-
-    badge.pack_propagate(False)
-
-    icon_label = Label(
-        badge,
-        text="🔒",
-        bg="#F3F4F7",
-        fg="#AAAAAA",
-        font=(FONT_NAME, 18, "bold")
-    )
-
-    icon_label.pack(
-        pady=(8, 0)
-    )
-
-    name_label = Label(
-        badge,
-        text=name,
-        bg="#F3F4F7",
-        fg="#AAAAAA",
-        font=(FONT_NAME, 8, "bold")
-    )
-
-    name_label.pack()
-
-    badge_labels[key] = (
-        badge,
-        icon_label,
-        name_label
-    )
-
-
-def update_badges_ui():
-
-    for key, icon, name in badge_info:
-
-        badge, icon_label, name_label = badge_labels[key]
-
-        if badges[key]:
-
-            badge.config(
-                bg=YELLOW
-            )
-
-            icon_label.config(
-                text=icon,
-                bg=YELLOW,
-                fg=RED
-            )
-
-            name_label.config(
-                fg="#333333",
-                bg=YELLOW
-            )
-
-        else:
-
-            badge.config(
-                bg="#F3F4F7"
-            )
-
-            icon_label.config(
-                text="🔒",
-                bg="#F3F4F7",
-                fg="#AAAAAA"
-            )
-
-            name_label.config(
-                fg="#AAAAAA",
-                bg="#F3F4F7"
-            )
-
-
-def update_badges_ui():
-
-    for key, icon, name in badge_info:
-
-        badge, icon_label, name_label = badge_labels[key]
-
-        if badges[key]:
-
-            badge.config(
-                bg=YELLOW
-            )
-
-            icon_label.config(
-                text=icon,
-                bg=YELLOW,
-                fg=RED
-            )
-
-            name_label.config(
-                fg="#333333",
-                bg=YELLOW
-            )
-
-        else:
-
-            badge.config(
-                bg="#F3F4F7"
-            )
-
-            icon_label.config(
-                text="🔒",
-                bg="#F3F4F7",
-                fg="#AAAAAA"
-            )
-
-            name_label.config(
-                fg="#AAAAAA",
-                bg="#F3F4F7"
-            )
-
-# ---------------------------- PRODUCTIVITY DASHBOARD ------------------------------- #
-
-dashboard_title = Label(
-    main_frame,
-    text="📊 Productivity Dashboard",
-    fg=RED,
-    bg=YELLOW,
-    font=(FONT_NAME, 22, "bold")
-)
-
-dashboard_title.grid(
-    column=1,
-    row=30,
-    pady=(40, 15)
-)
-
-
-dashboard_sessions = Label(
-    main_frame,
-    text="🍅 Sessions Completed: 0",
-    fg="#333333",
-    bg=YELLOW,
-    font=(FONT_NAME, 13, "bold")
-)
-
-dashboard_sessions.grid(
-    column=1,
-    row=31,
-    pady=5
-)
-
-
-dashboard_focus = Label(
-    main_frame,
-    text="⏱ Focus Time: 0 min",
-    fg="#333333",
-    bg=YELLOW,
-    font=(FONT_NAME, 13, "bold")
-)
-
-dashboard_focus.grid(
-    column=1,
-    row=32,
-    pady=5
-)
-
-
-dashboard_tasks = Label(
-    main_frame,
-    text="✅ Tasks Completed: 0/0",
-    fg="#333333",
-    bg=YELLOW,
-    font=(FONT_NAME, 13, "bold")
-)
-
-dashboard_tasks.grid(
-    column=1,
-    row=33,
-    pady=5
-)
-
-
-dashboard_progress = Label(
-    main_frame,
-    text="📊 Today's Progress: 0%",
-    fg=GREEN,
-    bg=YELLOW,
-    font=(FONT_NAME, 15, "bold")
-)
-
-dashboard_progress.grid(
-    column=1,
-    row=34,
-    pady=(10, 10)
-)
-
-
-# ---------------------------- PROGRESS BAR ------------------------------- #
-
-progress_bar = Canvas(
-    main_frame,
-    width=300,
-    height=25,
-    bg=YELLOW,
-    highlightthickness=0
-)
-
-progress_bar.grid(
-    column=1,
-    row=35,
-    pady=(0, 30)
+achievements_heading = tk.Frame(
+    achievements_card,
+    bg=CARD,
 )
-
 
-# ---------------------------- TASK INPUT ------------------------------- #
-
-task_entry = Entry(
-    main_frame,
-    width=25,
-    font=(FONT_NAME, 12)
+achievements_heading.pack(
+    fill="x",
+    padx=18,
+    pady=(16, 4),
 )
 
-task_entry.grid(
-    column=0,
-    row=9,
-    padx=5
-)
+tk.Label(
+    achievements_heading,
+    text="Achievements",
+    bg=CARD,
+    fg=TEXT,
+    font=(FONT_NAME, 14, "bold"),
+).pack(side="left")
 
+tk.Label(
+    achievements_heading,
+    text="Keep your streak going",
+    bg=CARD,
+    fg=MUTED,
+    font=(FONT_NAME, 9),
+).pack(side="right")
 
-add_task_button = Button(
-    main_frame,
-    text="Add",
-    font=(FONT_NAME, 12, "bold"),
-    highlightthickness=0,
-    command=add_task
+badge_grid = tk.Frame(achievements_card, bg=CARD)
+badge_grid.pack(
+    fill="x",
+    padx=10,
+    pady=(4, 12),
 )
 
-add_task_button.grid(
-    column=2,
-    row=9
-)
+for column in range(4):
+    badge_grid.columnconfigure(column, weight=1)
 
 
-# ---------------------------- LOAD SAVED TASKS ------------------------------- #
+# =========================================================
+# STARTUP AND SHUTDOWN
+# =========================================================
 
-load_tasks()
+load_data()
+render_tasks()
+refresh_dashboard()
+update_timer_display()
 
 
-update_badges_ui()
+def close_app():
+    global timer_running, timer_after_id
 
-# ---------------------------- INITIAL DASHBOARD ------------------------------- #
+    timer_running = False
 
-update_dashboard()
+    if timer_after_id is not None:
+        try:
+            root.after_cancel(timer_after_id)
+        except tk.TclError:
+            pass
 
+    save_data()
+    root.destroy()
 
-# ---------------------------- MAIN LOOP ------------------------------- #
 
-window.mainloop()
+root.protocol("WM_DELETE_WINDOW", close_app)
+root.mainloop()

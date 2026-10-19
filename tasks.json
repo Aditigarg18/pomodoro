@@ -1,0 +1,56 @@
+{
+    "2026-08-23": {
+        "tasks": [
+            "✅ Tasks Completed: 0/3",
+            "🟡 ☐ java",
+            "🟡 ☐ sql",
+            "🔥 ☐ python"
+        ],
+        "sessions": 0,
+        "focus_minutes": 0
+    },
+    "2026-08-24": {
+        "tasks": [
+            "✅ Tasks Completed: 4/7",
+            "✅ Tasks Completed: 3/7",
+            "✅ Tasks Completed: 2/5",
+            "✅ Tasks Completed: 1/3",
+            "🟡 ☐ jav",
+            "🟡 ✅ SQL",
+            "🔥 ☐ PYTHON",
+            "🟡 ☐ POWER BI"
+        ],
+        "sessions": 0,
+        "focus_minutes": 0
+    },
+    "2026-08-25": {
+        "tasks": [
+            "✅ Tasks Completed: 1/3",
+            "🔥 ☐ python",
+            "🔥 ✅ arrays",
+            "🟢 ☐ tkinter122"
+        ],
+        "sessions": 4,
+        "focus_minutes": 4
+    },
+    "2026-10-19": {
+        "tasks": [
+            {
+                "text": "java",
+                "priority": "Medium",
+                "done": false
+            }
+        ],
+        "sessions": 0,
+        "focus_minutes": 0,
+        "badges": {
+            "first_task": false,
+            "task_crusher": false,
+            "productivity_pro": false,
+            "focus_starter": false,
+            "deep_focus": false,
+            "focus_master": false,
+            "perfect_day": false
+        }
+    }
+}

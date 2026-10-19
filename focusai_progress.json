@@ -1,0 +1,1177 @@
+{
+  "Java": {
+    "completed": [
+      "0:3",
+      "0:2",
+      "0:0",
+      "0:4",
+      "0:1",
+      "1:2",
+      "1:3",
+      "1:4",
+      "1:1",
+      "1:0",
+      "2:2",
+      "2:3",
+      "2:4",
+      "2:0",
+      "2:1"
+    ],
+    "passed_levels": [
+      0,
+      1,
+      2
+    ],
+    "final_passed": true,
+    "certificate": "D:\\aditi\\projects-final\\pomodoro\\pomodoro-start\\focusai_certificates\\Aditi_Garg_Java_certificate.pdf",
+    "course": {
+      "levels": [
+        {
+          "title": "Beginner",
+          "topics": [
+            {
+              "title": "Introduction to Java and Environment Setup",
+              "description": "Understand the architecture of Java, the roles of JDK, JRE, and JVM, and write your first Hello World program.",
+              "video_query": "Java JDK setup and hello world tutorial for beginners"
+            },
+            {
+              "title": "Variables, Data Types, and Operators",
+              "description": "Learn primitive data types, variable declarations, type casting, and standard arithmetic, logical, and relational operators.",
+              "video_query": "Java primitive data types and operators tutorial"
+            },
+            {
+              "title": "Control Flow Statements",
+              "description": "Master decision-making and looping constructs using if-else conditions, switch expressions, while loops, and for loops.",
+              "video_query": "Java conditional statements and loops tutorial"
+            },
+            {
+              "title": "Arrays and String Basics",
+              "description": "Declare and manipulate single and multidimensional arrays, and explore common String methods and String immutability.",
+              "video_query": "Java arrays and String class manipulation tutorial"
+            },
+            {
+              "title": "Methods and Variable Scope",
+              "description": "Learn how to define reusable blocks of code, pass parameters, handle return values, and understand local vs block scope.",
+              "video_query": "Java methods parameters and return types tutorial"
+            }
+          ],
+          "exam": [
+            {
+              "question": "Which Java component is responsible for executing compiled bytecode?",
+              "options": [
+                "JDK",
+                "JRE",
+                "JVM",
+                "Javac"
+              ],
+              "answer": 2,
+              "explanation": "The JVM (Java Virtual Machine) executes the compiled Java bytecode on the target machine."
+            },
+            {
+              "question": "What is the default value of an uninitialized boolean instance variable in Java?",
+              "options": [
+                "true",
+                "false",
+                "0",
+                "null"
+              ],
+              "answer": 1,
+              "explanation": "In Java, instance variables of type boolean default to false if not explicitly initialized."
+            },
+            {
+              "question": "Which keyword is used to exit immediately from a loop in Java?",
+              "options": [
+                "continue",
+                "exit",
+                "return",
+                "break"
+              ],
+              "answer": 3,
+              "explanation": "The 'break' statement terminates the enclosing loop immediately."
+            },
+            {
+              "question": "What happens when you modify a String object in Java using methods like concat()?",
+              "options": [
+                "The original String is modified directly in memory",
+                "A new String object is created with the modified value",
+                "A compilation error occurs",
+                "The String is converted into a char array"
+              ],
+              "answer": 1,
+              "explanation": "Strings in Java are immutable; any modification produces a new String object rather than altering the original."
+            },
+            {
+              "question": "What is the return type of a method that does not return any value?",
+              "options": [
+                "null",
+                "empty",
+                "void",
+                "static"
+              ],
+              "answer": 2,
+              "explanation": "The 'void' keyword indicates that a method does not return a value."
+            }
+          ]
+        },
+        {
+          "title": "Intermediate",
+          "topics": [
+            {
+              "title": "Object-Oriented Programming: Classes and Objects",
+              "description": "Explore object-oriented paradigms, encapsulation, constructors, access modifiers, and the 'this' keyword.",
+              "video_query": "Java OOP classes objects constructors tutorial"
+            },
+            {
+              "title": "Inheritance and Polymorphism",
+              "description": "Implement code reuse with the 'extends' keyword, method overriding, dynamic method dispatch, and the 'super' keyword.",
+              "video_query": "Java inheritance and method overriding tutorial"
+            },
+            {
+              "title": "Abstract Classes and Interfaces",
+              "description": "Design modular code using interfaces, abstract methods, default methods, and multiple interface implementation.",
+              "video_query": "Java abstract classes vs interfaces tutorial"
+            },
+            {
+              "title": "Exception Handling",
+              "description": "Manage runtime errors gracefully with try, catch, finally, throw, throws, and create custom exceptions.",
+              "video_query": "Java try catch exception handling tutorial"
+            },
+            {
+              "title": "Collections Framework Basics",
+              "description": "Store and manipulate groups of objects using List, Set, and Map implementations like ArrayList and HashMap.",
+              "video_query": "Java collections framework ArrayList HashMap tutorial"
+            }
+          ],
+          "exam": [
+            {
+              "question": "Which access modifier allows access only within the same class?",
+              "options": [
+                "protected",
+                "default",
+                "private",
+                "public"
+              ],
+              "answer": 2,
+              "explanation": "'private' restricts visibility strictly to the declaring class."
+            },
+            {
+              "question": "Can a Java class extend multiple classes simultaneously?",
+              "options": [
+                "Yes, using commas between class names",
+                "No, Java supports single class inheritance only",
+                "Yes, but only if both are abstract classes",
+                "Yes, if the classes share the same package"
+              ],
+              "answer": 1,
+              "explanation": "Java does not support multiple class inheritance to avoid ambiguity; a class can only extend one superclass."
+            },
+            {
+              "question": "Which of the following is an unchecked exception in Java?",
+              "options": [
+                "IOException",
+                "SQLException",
+                "NullPointerException",
+                "ClassNotFoundException"
+              ],
+              "answer": 2,
+              "explanation": "NullPointerException extends RuntimeException, making it an unchecked exception that does not require mandatory try-catch blocks."
+            },
+            {
+              "question": "How does a HashSet determine if an element is a duplicate?",
+              "options": [
+                "By checking the memory address using ==",
+                "Using hashCode() and equals() methods",
+                "By comparing array indices",
+                "By checking the insertion order"
+              ],
+              "answer": 1,
+              "explanation": "HashSet uses the object's hashCode() method to locate the bucket and equals() method to verify value equality."
+            },
+            {
+              "question": "What is the main difference between method overloading and method overriding?",
+              "options": [
+                "Overloading happens at runtime; overriding happens at compile time",
+                "Overloading requires identical parameters; overriding requires different parameters",
+                "Overloading occurs in the same class; overriding occurs across inheritance hierarchies",
+                "Overriding does not allow changing the return type under any circumstances"
+              ],
+              "answer": 2,
+              "explanation": "Overloading allows multiple methods in the same class with the same name but different signatures, while overriding redefines a superclass method in a subclass."
+            }
+          ]
+        },
+        {
+          "title": "Advanced",
+          "topics": [
+            {
+              "title": "Generics and Wildcards",
+              "description": "Write type-safe code using generic classes, generic methods, bounded type parameters, and upper/lower wildcards.",
+              "video_query": "Java generics and wildcards explained in depth"
+            },
+            {
+              "title": "Multithreading and Concurrency",
+              "description": "Create threads, synchronize shared resources, avoid deadlocks, and use modern tools from java.util.concurrent.",
+              "video_query": "Java multithreading and concurrency deep dive"
+            },
+            {
+              "title": "Lambdas and the Stream API",
+              "description": "Leverage functional programming paradigms with lambda expressions, method references, and stream transformations.",
+              "video_query": "Java 8 Streams and Lambda expressions masterclass"
+            },
+            {
+              "title": "JVM Memory Management and Garbage Collection",
+              "description": "Understand Heap vs Stack memory, garbage collection algorithms, memory leak detection, and JVM tuning basics.",
+              "video_query": "Java JVM memory model heap stack and garbage collection"
+            },
+            {
+              "title": "Java I/O and NIO",
+              "description": "Perform high-performance file and network operations using Streams, Readers/Writers, Channels, Buffers, and Paths.",
+              "video_query": "Java NIO Channels Buffers and Files tutorial"
+            }
+          ],
+          "exam": [
+            {
+              "question": "What is type erasure in Java Generics?",
+              "options": [
+                "Removing unused generic classes during optimization",
+                "The compiler replacing all type parameters with their bounds or Object at compile time",
+                "Converting primitive types to their wrapper objects",
+                "A runtime mechanism that deletes dynamic types"
+              ],
+              "answer": 1,
+              "explanation": "Type erasure ensures backwards compatibility by stripping generic type parameters and inserting casts as needed during compilation."
+            },
+            {
+              "question": "What guarantee does the 'volatile' keyword provide in Java multithreading?",
+              "options": [
+                "Atomic execution of compound statements",
+                "Mutual exclusion lock on the object",
+                "Visibility of changes across threads by reading/writing directly to main memory",
+                "Prevention of thread starvation"
+              ],
+              "answer": 2,
+              "explanation": "The 'volatile' modifier guarantees memory visibility, ensuring that updates to a variable are immediately visible to all other threads."
+            },
+            {
+              "question": "Which Stream API method is classified as a terminal operation?",
+              "options": [
+                "filter()",
+                "map()",
+                "collect()",
+                "peek()"
+              ],
+              "answer": 2,
+              "explanation": "The 'collect()' method is a terminal operation that triggers the processing of the pipeline and produces a result."
+            },
+            {
+              "question": "Where are local primitive variables stored during method execution?",
+              "options": [
+                "On the Heap",
+                "In the Metaspace",
+                "On the Stack",
+                "In the Constant Pool"
+              ],
+              "answer": 2,
+              "explanation": "Local variables declared inside methods are allocated on the thread's call Stack frame."
+            },
+            {
+              "question": "In Java NIO, which component acts as the container for data being transferred?",
+              "options": [
+                "Channel",
+                "Selector",
+                "Buffer",
+                "Pipe"
+              ],
+              "answer": 2,
+              "explanation": "A Buffer is a contiguous block of memory used to hold data being read from or written to a Channel."
+            }
+          ]
+        }
+      ],
+      "final_exam": [
+        {
+          "question": "What file extension does compiled Java source code produce?",
+          "options": [
+            ".java",
+            ".exe",
+            ".class",
+            ".jar"
+          ],
+          "answer": 2,
+          "explanation": "The Java compiler (javac) transforms .java source code into .class files containing platform-independent bytecode."
+        },
+        {
+          "question": "What does the expression 'str1 == str2' compare when used with two String variables?",
+          "options": [
+            "The characters inside the strings",
+            "The length of the strings",
+            "The memory addresses of the two references",
+            "Whether both strings were created using literals"
+          ],
+          "answer": 2,
+          "explanation": "The '==' operator checks reference equality (whether both point to the exact same memory location), not content equality."
+        },
+        {
+          "question": "Which of these can be instantiated directly using the 'new' keyword?",
+          "options": [
+            "Abstract class",
+            "Interface",
+            "Concrete class",
+            "Functional Interface"
+          ],
+          "answer": 2,
+          "explanation": "Only concrete classes can be directly instantiated; abstract classes and interfaces require concrete subclasses or implementations."
+        },
+        {
+          "question": "Under what circumstance will a finally block NOT execute following a try block?",
+          "options": [
+            "An uncaught exception is thrown",
+            "A return statement is encountered in the try block",
+            "System.exit(0) is invoked inside the try block",
+            "The catch block executes successfully"
+          ],
+          "answer": 2,
+          "explanation": "Calling System.exit() halts the JVM immediately, preventing any remaining finally blocks from running."
+        },
+        {
+          "question": "Which Collection interface prevents duplicate elements?",
+          "options": [
+            "List",
+            "Queue",
+            "Set",
+            "Vector"
+          ],
+          "answer": 2,
+          "explanation": "The Set interface models mathematical sets and disallows duplicate elements."
+        },
+        {
+          "question": "What is the defining requirement of a Functional Interface in Java?",
+          "options": [
+            "It must contain exactly one abstract method",
+            "It must not contain any static methods",
+            "It cannot have default methods",
+            "It must be annotated with @Functional"
+          ],
+          "answer": 0,
+          "explanation": "A functional interface is defined as having exactly one abstract method (Single Abstract Method pattern)."
+        },
+        {
+          "question": "Which method from the Object class must be overridden alongside equals() to preserve hash-based collection contracts?",
+          "options": [
+            "toString()",
+            "clone()",
+            "hashCode()",
+            "finalize()"
+          ],
+          "answer": 2,
+          "explanation": "If two objects are equal according to equals(), they must produce the same integer result from hashCode()."
+        },
+        {
+          "question": "What is the purpose of the Optional class introduced in Java 8?",
+          "options": [
+            "To make method parameters optional at compile time",
+            "To provide a type-level representation of an absent value and mitigate NullPointerExceptions",
+            "To improve garbage collection performance",
+            "To allow methods to return multiple values"
+          ],
+          "answer": 1,
+          "explanation": "Optional is a container object used to represent the presence or absence of a non-null value clearly without returning null."
+        },
+        {
+          "question": "Which keyword prevents a class from being subclassed in Java?",
+          "options": [
+            "static",
+            "abstract",
+            "final",
+            "sealed"
+          ],
+          "answer": 2,
+          "explanation": "Marking a class declaration with 'final' prevents any other class from extending it."
+        },
+        {
+          "question": "How does the ConcurrentHashMap achieve thread safety without locking the entire table?",
+          "options": [
+            "By synchronizing every read and write method",
+            "By using lock striping and bucket-level synchronized nodes or CAS operations",
+            "By cloning the array on every write operation",
+            "By enforcing single-threaded execution"
+          ],
+          "answer": 1,
+          "explanation": "ConcurrentHashMap uses CAS (Compare-And-Swap) operations and synchronizes only on the head nodes of individual buckets rather than the whole map."
+        }
+      ]
+    }
+  },
+  "powerbi": {
+    "completed": [
+      "0:0",
+      "0:1",
+      "0:2",
+      "0:3",
+      "0:4"
+    ],
+    "passed_levels": [],
+    "final_passed": false,
+    "certificate": null,
+    "course": {
+      "levels": [
+        {
+          "title": "Beginner",
+          "topics": [
+            {
+              "title": "Introduction to Power BI Desktop and Workflow",
+              "description": "Understand the core components of the Power BI ecosystem, install Power BI Desktop, and navigate the Report, Data, and Model views.",
+              "video_query": "Power BI Desktop interface and overview tutorial for beginners"
+            },
+            {
+              "title": "Connecting to Data Sources",
+              "description": "Learn how to import and connect data from diverse standard sources including Excel files, CSVs, and Web data.",
+              "video_query": "How to import Excel and CSV data into Power BI tutorial"
+            },
+            {
+              "title": "Basic Data Cleaning in Power Query Editor",
+              "description": "Explore the Power Query Editor to remove columns, filter rows, change data types, handle errors, and promote headers.",
+              "video_query": "Power Query Editor beginner tutorial data transformation"
+            },
+            {
+              "title": "Creating Fundamental Visualizations",
+              "description": "Build essential visuals such as column charts, bar charts, cards, tables, and slicers to present summarized data effectively.",
+              "video_query": "Creating basic charts and visuals in Power BI tutorial"
+            },
+            {
+              "title": "Formatting and Designing a Report Page",
+              "description": "Apply themes, customize visual formatting, set up page sizes, and use visual interactions to craft clean, user-friendly reports.",
+              "video_query": "Designing and formatting dashboards in Power BI tutorial"
+            }
+          ],
+          "exam": [
+            {
+              "question": "Which view in Power BI Desktop is primarily used to build and arrange visualizations?",
+              "options": [
+                "Model view",
+                "Report view",
+                "Data view",
+                "Power Query Editor"
+              ],
+              "answer": 1,
+              "explanation": "Report view is the primary workspace where canvases are designed and visualizations are arranged into reports."
+            },
+            {
+              "question": "What is the primary function of the Power Query Editor in Power BI?",
+              "options": [
+                "To schedule automatic cloud refreshes",
+                "To write DAX measures for KPI cards",
+                "To extract, transform, and clean incoming data",
+                "To host web-published interactive dashboards"
+              ],
+              "answer": 2,
+              "explanation": "Power Query Editor is the ETL (Extract, Transform, Load) engine inside Power BI used for cleaning and reshaping data."
+            },
+            {
+              "question": "What file extension is used when saving a Power BI Desktop project locally?",
+              "options": [
+                ".pbix",
+                ".xlsx",
+                ".pbit",
+                ".dax"
+              ],
+              "answer": 0,
+              "explanation": ".pbix is the default file extension for Power BI Desktop report files."
+            },
+            {
+              "question": "Which visual is best suited to display a single aggregated key performance indicator (e.g., Total Sales)?",
+              "options": [
+                "Scatter plot",
+                "Card visual",
+                "Matrix",
+                "Treemap"
+              ],
+              "answer": 1,
+              "explanation": "The Card visual is designed to display a single metric or scalar value prominently."
+            },
+            {
+              "question": "What happens when you click 'Close & Apply' in the Power Query Editor?",
+              "options": [
+                "Transformations are saved into the cloud without modifying the local model",
+                "Transformations are discarded and the editor closes",
+                "Data transformations are applied and loaded into the Power BI data model",
+                "The Power BI Desktop application exits completely"
+              ],
+              "answer": 2,
+              "explanation": "'Close & Apply' commits all transformation steps and loads the cleaned tables into the data model."
+            }
+          ]
+        },
+        {
+          "title": "Intermediate",
+          "topics": [
+            {
+              "title": "Data Modeling and Star Schema Design",
+              "description": "Learn the concepts of fact and dimension tables, manage table relationships (one-to-many), and configure cross-filter directions.",
+              "video_query": "Power BI data modeling star schema tutorial"
+            },
+            {
+              "title": "Introduction to DAX: Calculated Columns vs. Measures",
+              "description": "Understand the critical differences in evaluation context between row-by-row calculated columns and aggregated DAX measures.",
+              "video_query": "DAX calculated columns vs measures in Power BI tutorial"
+            },
+            {
+              "title": "Modifying Filter Context with CALCULATE",
+              "description": "Master the CALCULATE function, filter modifications using FILTER and ALL, and learn how DAX evaluates context.",
+              "video_query": "Power BI CALCULATE function explained tutorial"
+            },
+            {
+              "title": "Implementing Time Intelligence in DAX",
+              "description": "Create standard date tables and implement time-based calculations such as Year-To-Date (TOTALYTD) and Previous Year comparisons.",
+              "video_query": "Power BI time intelligence functions TOTALYTD tutorial"
+            },
+            {
+              "title": "Interactive Features: Drillthrough, Tooltips, and Bookmarks",
+              "description": "Enhance user experience with drillthrough pages, report page tooltips, selection panes, and navigation buttons powered by bookmarks.",
+              "video_query": "Power BI bookmarks buttons and drillthrough tutorial"
+            }
+          ],
+          "exam": [
+            {
+              "question": "What is the recommended schema architecture for modeling data in Power BI?",
+              "options": [
+                "Flat single table",
+                "Star schema",
+                "Circular reference schema",
+                "Normalized 3NF transactional schema"
+              ],
+              "answer": 1,
+              "explanation": "A star schema, consisting of fact tables surrounded by dimension tables, provides optimal performance and usability in Power BI."
+            },
+            {
+              "question": "What is a key difference between a calculated column and a measure in DAX?",
+              "options": [
+                "Calculated columns are evaluated on the fly; measures consume disk space in the model",
+                "Measures are evaluated in row context; calculated columns evaluate only in filter context",
+                "Calculated columns store values in the data model row by row; measures compute on demand based on filter context",
+                "Measures can only be created using Power Query M code"
+              ],
+              "answer": 2,
+              "explanation": "Calculated columns add data to the model and consume RAM/disk row-by-row, while measures compute aggregations dynamically based on filter context."
+            },
+            {
+              "question": "Which DAX function allows you to override or modify the current filter context?",
+              "options": [
+                "RELATED",
+                "CALCULATE",
+                "SUMX",
+                "CONCATENATEX"
+              ],
+              "answer": 1,
+              "explanation": "CALCULATE is the only DAX function that can modify the filter context during formula evaluation."
+            },
+            {
+              "question": "Which prerequisite is essential before using Power BI Time Intelligence functions reliably?",
+              "options": [
+                "A dedicated, continuous date table marked as a Date Table",
+                "A direct live connection to SQL Server",
+                "Enabling bidirectional cross-filtering on all tables",
+                "Converting all date fields into string format"
+              ],
+              "answer": 0,
+              "explanation": "Time intelligence functions require a contiguous date table marked as a Date Table to calculate comparisons accurately."
+            },
+            {
+              "question": "What Power BI feature allows users to navigate from a summary card or chart to another report page filtered by that specific item?",
+              "options": [
+                "Conditional Formatting",
+                "Drillthrough",
+                "Quick Measure",
+                "Data Alert"
+              ],
+              "answer": 1,
+              "explanation": "Drillthrough allows users to right-click a data point to navigate to a focused detail page filtered by the selected entity."
+            }
+          ]
+        },
+        {
+          "title": "Advanced",
+          "topics": [
+            {
+              "title": "Advanced DAX: Iterators, Context Transition, and Virtual Tables",
+              "description": "Deep dive into iterator functions (SUMX, AVERAGEX), understanding context transition, and manipulating virtual tables with ADDCOLUMNS and SUMMARIZE.",
+              "video_query": "Advanced DAX context transition and iterators tutorial"
+            },
+            {
+              "title": "Row-Level Security (RLS): Static and Dynamic",
+              "description": "Configure roles and DAX filter rules to restrict data access per user using USERNAME() and USERPRINCIPALNAME().",
+              "video_query": "Power BI dynamic row level security RLS tutorial"
+            },
+            {
+              "title": "Power BI Service: Workspaces, Gateways, and Refresh",
+              "description": "Publish reports, configure app workspaces, set up On-premises Data Gateways, and manage scheduled data refreshes.",
+              "video_query": "Power BI Service gateway configuration and scheduled refresh tutorial"
+            },
+            {
+              "title": "Performance Tuning and Optimization",
+              "description": "Utilize Performance Analyzer, DAX Studio, and VertiPaq Analyzer to detect visual bottlenecks, optimize query plans, and minimize model memory footprint.",
+              "video_query": "Power BI performance analyzer and DAX Studio optimization tutorial"
+            },
+            {
+              "title": "Enterprise Deployment: Pipelines, Dataflows, and Composite Models",
+              "description": "Implement enterprise-scale patterns using reusable Dataflows, Deployment Pipelines (Dev/Test/Prod), and composite models combining DirectQuery with Import.",
+              "video_query": "Power BI deployment pipelines and dataflows enterprise tutorial"
+            }
+          ],
+          "exam": [
+            {
+              "question": "What occurs when the CALCULATE function is invoked inside a row context (e.g., inside a row of a calculated column or an iterator)?",
+              "options": [
+                "A syntax error is thrown",
+                "Context transition transforms the current row context into an equivalent filter context",
+                "All filters are cleared from the entire report",
+                "The calculation defaults to an unweighted average"
+              ],
+              "answer": 1,
+              "explanation": "Context transition is triggered by CALCULATE inside an existing row context, converting the current row attributes into filter context."
+            },
+            {
+              "question": "Which DAX function returns the User Principal Name (email) of the logged-in user to enable dynamic Row-Level Security?",
+              "options": [
+                "CURRENTUSER()",
+                "USEROBJECTID()",
+                "USERPRINCIPALNAME()",
+                "ACTIVEUSER()"
+              ],
+              "answer": 2,
+              "explanation": "USERPRINCIPALNAME() returns the user's login email in the Power BI Service, enabling dynamic security rules."
+            },
+            {
+              "question": "What is required to refresh a dataset in the Power BI Service that connects to an on-premises SQL Server database?",
+              "options": [
+                "A Power BI Embedded capacity",
+                "An On-premises Data Gateway installed on the local network",
+                "A public static IP on the Power BI Desktop client",
+                "DirectQuery with no credentials configured"
+              ],
+              "answer": 1,
+              "explanation": "An On-premises Data Gateway acts as a secure bridge between cloud Power BI services and local on-premises data sources."
+            },
+            {
+              "question": "Which tool within Power BI Desktop measures the exact duration and breakdown (DAX query, visual display, other) for visual rendering?",
+              "options": [
+                "Performance Analyzer",
+                "Query Diagnostics",
+                "DAX Linter",
+                "Data Profiler"
+              ],
+              "answer": 0,
+              "explanation": "Performance Analyzer records and displays the time taken by each report visual to query and render."
+            },
+            {
+              "question": "What is a primary benefit of using Power BI Dataflows in an enterprise architecture?",
+              "options": [
+                "Direct replacement of DAX measures in visual layers",
+                "Reusable, centralized ETL logic stored in Azure Data Lake storage",
+                "Automatic conversion of DirectQuery sources to tabular files",
+                "Automatic generation of mobile dashboard layouts"
+              ],
+              "answer": 1,
+              "explanation": "Dataflows provide reusable Power Query ETL processes in the cloud, allowing multiple reports to ingest standardized, pre-transformed data."
+            }
+          ]
+        }
+      ],
+      "final_exam": [
+        {
+          "question": "Which language is primarily used in Power Query for data transformation and shaping?",
+          "options": [
+            "DAX",
+            "SQL",
+            "M",
+            "C#"
+          ],
+          "answer": 2,
+          "explanation": "The Power Query engine uses the M formula language to define data extraction and transformation steps."
+        },
+        {
+          "question": "In Power BI data modeling, what type of cardinality relationship is best practice between a dimension table and a fact table?",
+          "options": [
+            "Many-to-Many",
+            "One-to-One",
+            "One-to-Many",
+            "Many-to-None"
+          ],
+          "answer": 2,
+          "explanation": "A One-to-Many (1:*) relationship from a dimension table (primary key) to a fact table (foreign key) is standard practice."
+        },
+        {
+          "question": "Which DAX function ignores existing filters applied to a specified table or column?",
+          "options": [
+            "VALUES",
+            "ALL",
+            "FILTER",
+            "KEEPFILTERS"
+          ],
+          "answer": 1,
+          "explanation": "ALL removes existing filters from a column or table, enabling baseline calculations like grand totals."
+        },
+        {
+          "question": "What is the primary difference between Import mode and DirectQuery mode in Power BI?",
+          "options": [
+            "Import mode queries the underlying database in real time; DirectQuery caches data in memory",
+            "DirectQuery loads all data into the VertiPaq in-memory engine; Import mode does not",
+            "Import mode loads a snapshot of data into memory; DirectQuery leaves data in the source and queries it on demand",
+            "DirectQuery supports all DAX functions without restrictions; Import mode does not"
+          ],
+          "answer": 2,
+          "explanation": "Import mode loads and compresses data into the in-memory VertiPaq engine, whereas DirectQuery issues real-time queries back to the source."
+        },
+        {
+          "question": "What does the DIVIDE(Numerator, Denominator) function in DAX do when division by zero occurs?",
+          "options": [
+            "Throws an unhandled system crash",
+            "Returns BLANK() by default unless an alternate result is specified",
+            "Returns 0 automatically",
+            "Returns an #ERROR string in the report visual"
+          ],
+          "answer": 1,
+          "explanation": "DIVIDE safely handles division by zero by returning BLANK() or an optional third argument (such as 0), avoiding evaluation errors."
+        },
+        {
+          "question": "What is the function of the Selection Pane in Power BI Desktop?",
+          "options": [
+            "To select which databases to connect to during ETL",
+            "To control the visibility (hide/show) and z-order layer of visuals on a page",
+            "To write M code step-by-step",
+            "To choose which users can access the report"
+          ],
+          "answer": 1,
+          "explanation": "The Selection Pane manages visual layering and allows developers to show or hide visual elements, which is key for bookmark design."
+        },
+        {
+          "question": "Which DAX function calculates an aggregation iteratively across rows of a table?",
+          "options": [
+            "SUM",
+            "MAX",
+            "SUMX",
+            "COUNT"
+          ],
+          "answer": 2,
+          "explanation": "SUMX is an iterator function that evaluates an expression for every row in a table and sums the resulting values."
+        },
+        {
+          "question": "Where are Row-Level Security (RLS) rules and roles created and initially tested before publishing?",
+          "options": [
+            "Power BI Service dataset settings only",
+            "Power BI Desktop using the 'Manage Roles' and 'View as' options",
+            "The On-premises Data Gateway configuration tool",
+            "Azure Active Directory Admin Center"
+          ],
+          "answer": 1,
+          "explanation": "Roles and DAX filter expressions are defined in Power BI Desktop under Modeling > Manage Roles and tested using View As."
+        },
+        {
+          "question": "What storage engine powers the high compression and fast in-memory queries of Power BI Import models?",
+          "options": [
+            "VertiPaq",
+            "Infinispan",
+            "RocksDB",
+            "InnoDB"
+          ],
+          "answer": 0,
+          "explanation": "VertiPaq is the columnar in-memory database engine that powers Power BI and Analysis Services Tabular models."
+        },
+        {
+          "question": "How can you share a finalized collection of related dashboards and reports with end-users in Power BI Service without giving them workspace editing access?",
+          "options": [
+            "By emailing the .pbix file",
+            "By publishing a Power BI App from the workspace",
+            "By assigning them the Admin role in the workspace",
+            "By exporting all report pages as static CSV files"
+          ],
+          "answer": 1,
+          "explanation": "Publishing a Power BI App distributes packaged, read-only content to consumers while keeping development workspaces protected."
+        }
+      ]
+    }
+  },
+  "cooking": {
+    "completed": [],
+    "passed_levels": [],
+    "final_passed": false,
+    "certificate": null,
+    "course": {
+      "levels": [
+        {
+          "title": "Beginner",
+          "topics": [
+            {
+              "title": "Essential Knife Skills and Safety",
+              "description": "Learn how to hold a chef's knife correctly using the pinch grip, use the claw hand for safety, and master fundamental cuts like dicing, slicing, and mincing.",
+              "video_query": "basic knife skills culinary tutorial"
+            },
+            {
+              "title": "Kitchen Safety and Food Hygiene",
+              "description": "Understand core kitchen sanitation principles, cross-contamination prevention, food storage temperatures, and how to safely handle raw meat.",
+              "video_query": "kitchen safety food handling cross contamination guide"
+            },
+            {
+              "title": "Basic Cooking Methods: Boiling, Steaming, and Sautéing",
+              "description": "Explore heat management on the stovetop by practicing gentle steaming, rolling boiling, and quick sautéing with cooking oils.",
+              "video_query": "basic cooking methods boiling steaming sauteing"
+            },
+            {
+              "title": "The Fundamentals of Seasoning",
+              "description": "Discover how salt, acid, fat, and heat work together to build flavor, and practice seasoning food incrementally throughout cooking.",
+              "video_query": "how to season food properly salt acid fat heat"
+            },
+            {
+              "title": "Cooking Everyday Staples: Eggs and Grains",
+              "description": "Master essential everyday cooking staples including perfectly fluffy scrambled eggs, sunny-side up eggs, and fluffy steamed white rice.",
+              "video_query": "how to cook perfect eggs and rice for beginners"
+            }
+          ],
+          "exam": [
+            {
+              "question": "What is the recommended hand grip for maximum control and safety when holding a chef's knife?",
+              "options": [
+                "Wrapping all five fingers around the handle",
+                "Pinching the blade between your thumb and index finger at the bolster",
+                "Extending your index finger along the top spine of the blade",
+                "Holding the very end of the handle with three fingers"
+              ],
+              "answer": 1,
+              "explanation": "The pinch grip, where you grip the blade between your thumb and forefinger right around the bolster, provides the best balance and control."
+            },
+            {
+              "question": "What temperature range represents the 'Temperature Danger Zone' where bacteria multiply rapidly in food?",
+              "options": [
+                "0°F to 32°F (-18°C to 0°C)",
+                "40°F to 140°F (4°C to 60°C)",
+                "145°F to 180°F (63°C to 82°C)",
+                "200°F to 250°F (93°C to 121°C)"
+              ],
+              "answer": 1,
+              "explanation": "Bacteria multiply most rapidly in the range of 40°F to 140°F (4°C to 60°C), making it crucial to keep perishable foods out of this range."
+            },
+            {
+              "question": "What is the difference between a simmer and a rolling boil?",
+              "options": [
+                "Simmering produces gentle, sporadic bubbles, while boiling produces rapid, vigorous bubbling",
+                "Boiling is done at lower temperatures than simmering",
+                "Simmering requires a covered pot, whereas boiling must always be uncovered",
+                "Boiling is used only for meats, while simmering is used only for liquids"
+              ],
+              "answer": 0,
+              "explanation": "A simmer features small, gentle bubbles breaking the surface occasionally (approx. 185°F–205°F), whereas a rolling boil has violent, continuous bubbling throughout (212°F)."
+            },
+            {
+              "question": "When should salt ideally be added to food during the cooking process?",
+              "options": [
+                "Only right before eating at the dining table",
+                "In layers throughout the cooking process to build balanced flavor",
+                "Only at the very end after turning off the heat",
+                "All at once during the first five seconds of heating"
+              ],
+              "answer": 1,
+              "explanation": "Seasoning incrementally in layers throughout cooking allows salt to penetrate ingredients evenly and develop complex flavor."
+            },
+            {
+              "question": "What is the standard water-to-long-grain-white-rice ratio for standard absorption stovetop cooking?",
+              "options": [
+                "1 part water to 2 parts rice",
+                "1.5 to 2 parts water to 1 part rice",
+                "4 parts water to 1 part rice",
+                "Equal parts water and rice by volume"
+              ],
+              "answer": 1,
+              "explanation": "Standard long-grain white rice typically requires roughly 1.5 to 2 cups of water for every 1 cup of dry rice."
+            }
+          ]
+        },
+        {
+          "title": "Intermediate",
+          "topics": [
+            {
+              "title": "Pan Searing and Pan Sauces",
+              "description": "Learn how to achieve a deep golden sear on proteins, generate flavorful fond in the pan, and deglaze with liquids to make rich pan sauces.",
+              "video_query": "how to sear meat and make pan sauce deglazing"
+            },
+            {
+              "title": "Braising and Slow Cooking",
+              "description": "Understand the science of converting collagen to gelatin through low-and-slow moist-heat cooking techniques using tough cuts of meat.",
+              "video_query": "how to braise meat step by step culinary"
+            },
+            {
+              "title": "Classical Stocks and Mother Sauces",
+              "description": "Make basic brown and white stocks from scratch and master foundational mother sauces like Béchamel, Velouté, and Espagnole.",
+              "video_query": "the five french mother sauces tutorial"
+            },
+            {
+              "title": "Aromatics, Spices, and Blooming",
+              "description": "Explore aromatic bases such as mirepoix and soffritto, and master blooming ground spices in hot oil to unlock essential oils and depth.",
+              "video_query": "how to bloom spices mirepoix aromatic cooking"
+            },
+            {
+              "title": "Internal Temperatures and Meat Resting",
+              "description": "Use an instant-read thermometer accurately, predict carryover cooking, and rest meats properly to retain internal moisture.",
+              "video_query": "how to rest meat and check internal temperature"
+            }
+          ],
+          "exam": [
+            {
+              "question": "What is the culinary term for the browned, caramelized bits of food stuck to the bottom of a pan after searing?",
+              "options": [
+                "Chiffonade",
+                "Fond",
+                "Roux",
+                "Mirepoix"
+              ],
+              "answer": 1,
+              "explanation": "Fond consists of caramelized proteins and sugars stuck to the pan, which form the base for pan sauces when deglazed."
+            },
+            {
+              "question": "Which two base ingredients are cooked together to create a traditional roux?",
+              "options": [
+                "Equal parts oil and vinegar",
+                "Equal parts butter and egg yolks",
+                "Equal parts fat and flour by weight",
+                "Cornstarch dissolved in cold water"
+              ],
+              "answer": 2,
+              "explanation": "A roux is made by cooking equal parts flour and fat (commonly butter) together to thicken sauces and soups."
+            },
+            {
+              "question": "What happens during 'carryover cooking' after meat is removed from heat?",
+              "options": [
+                "The meat's internal temperature drops immediately",
+                "Residual surface heat continues to raise the internal temperature by several degrees",
+                "The meat absorbs outside humidity and increases its weight",
+                "The proteins completely solidify and lose all juices"
+              ],
+              "answer": 1,
+              "explanation": "Carryover cooking occurs when the retained heat on the exterior of the meat continues to travel inward, raising internal temperature by 5°F to 10°F while resting."
+            },
+            {
+              "question": "What are the traditional ingredients and vegetable ratio in a French mirepoix?",
+              "options": [
+                "2 parts onions, 1 part carrots, 1 part celery",
+                "Equal parts onions, bell peppers, and garlic",
+                "2 parts celery, 1 part leeks, 1 part carrots",
+                "3 parts garlic, 1 part onion, 1 part parsley"
+              ],
+              "answer": 0,
+              "explanation": "A standard French mirepoix consists of 50% onions, 25% carrots, and 25% celery by weight."
+            },
+            {
+              "question": "Which mother sauce is prepared by whisking white stock into a blond roux?",
+              "options": [
+                "Béchamel",
+                "Hollandaise",
+                "Velouté",
+                "Tomato"
+              ],
+              "answer": 2,
+              "explanation": "Velouté is made by thickening a light stock (veal, chicken, or fish) with a blond roux, whereas Béchamel uses milk."
+            }
+          ]
+        },
+        {
+          "title": "Advanced",
+          "topics": [
+            {
+              "title": "Emulsions: Hollandaise, Mayonnaise, and Beurre Blanc",
+              "description": "Master temporary and permanent culinary emulsions, temperature limits for egg yolks, and fixing broken emulsions.",
+              "video_query": "mastering culinary emulsions hollandaise beurre blanc"
+            },
+            {
+              "title": "Sous Vide and Precision Temperature Cooking",
+              "description": "Utilize immersion circulators, vacuum sealing, and precise thermal control to produce uniform doneness and tenderize tough meats.",
+              "video_query": "sous vide cooking guide and techniques"
+            },
+            {
+              "title": "Bread Science and Natural Fermentation",
+              "description": "Understand flour hydration percentages, gluten matrix development, sourdough starter maintenance, and fermentation timing.",
+              "video_query": "sourdough bread science hydration fermentation"
+            },
+            {
+              "title": "Modernist Techniques: Gels, Foams, and Spherification",
+              "description": "Incorporate hydrocolloids such as agar-agar, xanthan gum, and sodium alginate to alter textures, retain moisture, and modernize presentation.",
+              "video_query": "molecular gastronomy spherification hydrocolloids guide"
+            },
+            {
+              "title": "Culinary Composition and Advanced Plating Aesthetics",
+              "description": "Design restaurant-quality dishes applying balance of texture, visual contrast, height, color harmony, and negative space.",
+              "video_query": "advanced food plating techniques fine dining"
+            }
+          ],
+          "exam": [
+            {
+              "question": "What component in egg yolks acts as the primary emulsifying agent in sauces like hollandaise and mayonnaise?",
+              "options": [
+                "Albumin",
+                "Lecithin",
+                "Casein",
+                "Gluten"
+              ],
+              "answer": 1,
+              "explanation": "Lecithin is a phospholipid naturally present in egg yolks that binds water and fat molecules together in a stable emulsion."
+            },
+            {
+              "question": "What is the primary physical benefit of cooking proteins via sous vide compared to traditional roasting?",
+              "options": [
+                "It automatically creates a deep, crispy brown crust without searing",
+                "It guarantees uniform edge-to-edge doneness without overcooking the outer layers",
+                "It cooks food in under half the time of conventional methods",
+                "It dehydrates meat completely to concentrate flavor"
+              ],
+              "answer": 1,
+              "explanation": "Because sous vide holds the water bath at the exact desired core temperature, the entire protein cooks uniformly edge-to-edge without overcooking the exterior."
+            },
+            {
+              "question": "In bread baking, what does the term 'autolyse' refer to?",
+              "options": [
+                "The final proofing stage inside a hot oven",
+                "Resting the flour and water mixture before adding salt and yeast to hydrate the flour",
+                "Adding commercial diastatic malt powder to accelerate crust browning",
+                "Brushing the baked loaf with butter to soften the crust"
+              ],
+              "answer": 1,
+              "explanation": "Autolyse is the resting period of mixed flour and water before adding salt and leavener, which allows full hydration and enzymatic gluten breakdown."
+            },
+            {
+              "question": "Which hydrocolloid reacts with calcium ions to form gel spheres in the process of direct spherification?",
+              "options": [
+                "Gelatin",
+                "Sodium alginate",
+                "Cornstarch",
+                "Pectin"
+              ],
+              "answer": 1,
+              "explanation": "Sodium alginate dissolved in a liquid drops into a calcium bath (such as calcium chloride or lactate), forming a thin gel skin around the liquid."
+            },
+            {
+              "question": "When balancing a rich, fatty dish during final plating, what element is most commonly introduced to cut through richness?",
+              "options": [
+                "Additional animal fat",
+                "Acid or citrus juice",
+                "Cornstarch slurry",
+                "Refined white sugar"
+              ],
+              "answer": 1,
+              "explanation": "Acid (like lemon juice, vinegar, or pickled elements) cuts through heavy fats and balances the palate."
+            }
+          ]
+        }
+      ],
+      "final_exam": [
+        {
+          "question": "What is the minimum safe internal cooking temperature for whole poultry (chicken and turkey)?",
+          "options": [
+            "135°F (57°C)",
+            "145°F (63°C)",
+            "165°F (74°C)",
+            "185°F (85°C)"
+          ],
+          "answer": 2,
+          "explanation": "Poultry must reach an internal temperature of 165°F (74°C) to instantly kill harmful pathogens like Salmonella."
+        },
+        {
+          "question": "Which cutting board material is widely considered the most hygienic and gentle on knife edges for daily kitchen prep?",
+          "options": [
+            "Glass",
+            "Granite",
+            "End-grain wood or food-grade plastic",
+            "Stainless steel"
+          ],
+          "answer": 2,
+          "explanation": "End-grain wood and quality food-grade plastic provide safe surfaces that yield slightly to knife blades, preventing rapid dulling or chipping."
+        },
+        {
+          "question": "What is the key technique for deglazing a stainless steel pan after searing meat?",
+          "options": [
+            "Adding cold oil to cool the pan down quickly",
+            "Pouring in liquid like stock or wine and scraping up the fond with a wooden spoon",
+            "Scrubbing the pan dry with coarse kosher salt immediately",
+            "Submerging the hot pan directly into cold water"
+          ],
+          "answer": 1,
+          "explanation": "Deglazing involves adding liquid to a hot pan to dissolve and release caramelized fond from the bottom into a sauce."
+        },
+        {
+          "question": "Which of the following is an oil-in-water emulsion?",
+          "options": [
+            "Vinaigrette (without mustard)",
+            "Mayonnaise",
+            "Pure clarified butter",
+            "Chicken stock"
+          ],
+          "answer": 1,
+          "explanation": "Mayonnaise is a classic permanent oil-in-water emulsion where droplets of oil are suspended in water and stabilized by egg yolk lecithin."
+        },
+        {
+          "question": "Why is it important to pat meat surfaces completely dry before searing in a hot pan?",
+          "options": [
+            "Moisture promotes steaming instead of browning, preventing the Maillard reaction",
+            "Dry meat absorbs cooking oil much faster",
+            "Moisture makes the meat cook twice as fast internally",
+            "Dry meat prevents the meat from cooking through"
+          ],
+          "answer": 0,
+          "explanation": "Surface moisture turns to steam at 212°F, preventing the meat surface from reaching the higher temperatures (approx. 280°F–330°F) needed for the Maillard reaction."
+        },
+        {
+          "question": "What culinary role does an acid like wine or lemon juice play in a slow-braised meat stew?",
+          "options": [
+            "It thickens the braising liquid instantly",
+            "It tenderizes muscle fibers and balances richness with brightness",
+            "It prevents steam from escaping the closed pot",
+            "It acts as a replacement for water absorption"
+          ],
+          "answer": 1,
+          "explanation": "Acids assist in tenderizing proteins during long cooks and add vibrancy to cut through deep, rich gelatinous flavors."
+        },
+        {
+          "question": "In professional cooking, what does the term 'baker's percentage' mean?",
+          "options": [
+            "The percentage of profit expected per loaf sold",
+            "A notation where the weight of each ingredient is expressed as a percentage of total flour weight",
+            "The ratio of yeast compared to water only",
+            "The percentage of moisture lost during the baking cycle"
+          ],
+          "answer": 1,
+          "explanation": "In baker's percentages, flour is always set as the baseline of 100%, and all other ingredients (water, salt, yeast) are weighed relative to that flour weight."
+        },
+        {
+          "question": "What happens if you allow an egg-based hollandaise sauce to become too hot during whisking?",
+          "options": [
+            "The sauce clarifies and turns into clear oil",
+            "The egg proteins curdle and cause the emulsion to break",
+            "The sauce permanently foams and doubles in volume",
+            "The vinegar evaporates completely, sweetening the sauce"
+          ],
+          "answer": 1,
+          "explanation": "Overheating coagulates the egg yolks, separating the proteins from the fat and breaking the smooth emulsion into scrambled egg bits and melted butter."
+        },
+        {
+          "question": "Which culinary knife cut produces matchstick-shaped pieces measuring approximately 1/8 inch × 1/8 inch × 2 inches?",
+          "options": [
+            "Chiffonade",
+            "Julienne",
+            "Brunoise",
+            "Batonnet"
+          ],
+          "answer": 1,
+          "explanation": "A standard julienne cut measures 1/8 inch × 1/8 inch × 2 inches. Batonnet is thicker (1/4 inch × 1/4 inch × 2 inches)."
+        },
+        {
+          "question": "What is the primary difference between braising and stewing?",
+          "options": [
+            "Braising uses large cuts of meat partially submerged, while stewing uses small uniform bite-sized pieces fully submerged",
+            "Braising is performed without any liquid, while stewing requires liquid",
+            "Stewing is done in the oven, whereas braising can only happen on an open grill",
+            "Braising is exclusive to vegetables, while stewing is only for poultry"
+          ],
+          "answer": 0,
+          "explanation": "Braising typically deals with whole or large cuts of meat in shallow liquid (covering 1/3 to 1/2 of the food), while stewing uses bite-sized pieces fully submerged in liquid."
+        }
+      ]
+    }
+  }
+}
